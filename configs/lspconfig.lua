@@ -3,7 +3,7 @@ require("nvchad.configs.lspconfig").defaults()
 
 local lspconfig = require "lspconfig"
 
-local servers = { "html", "cssls", "ruff_lsp", "tsserver", "eslint"}
+local servers = { "html", "cssls", "tsserver", "eslint"}
 local nvlsp = require "nvchad.configs.lspconfig"
 
 -- lsps with default config
@@ -24,8 +24,9 @@ lspconfig.pyright.setup {
 
 }
 
--- Enable tiny inline diagnostics on in python files
--- if vim.bo.filetype == 'python' then
-vim.diagnostic.config({ virtual_text = false })
--- end
-
+-- Enable tiny inline diagnostics on in python or lua files
+if vim.bo.filetype == 'python' or vim.bo.filetype == 'lua'  then
+  vim.diagnostic.config({ virtual_text = false })
+else
+  vim.diagnostic.config({ virtual_text = true })
+end
