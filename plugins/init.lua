@@ -1,11 +1,11 @@
 return {
   {
     "stevearc/conform.nvim",
-    event = 'BufWritePre', 
+    event = 'BufWritePre',
     opts = require "configs.conform",
   },
 
-  {
+   {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"
@@ -28,6 +28,8 @@ return {
     opts = {
       ensure_installed = {
         "pyright",
+        "mypy",
+        "ruff-lsp",
       },
     },
   },
@@ -38,4 +40,11 @@ return {
       require("tiny-inline-diagnostic").setup()
     end,
   },
+  {
+    "nvimtools/none-ls.nvim",
+    ft = {"python"},
+    opts = function()
+      require("configs.null-ls")
+    end,
+  }
 }
