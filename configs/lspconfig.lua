@@ -27,6 +27,6 @@ lspconfig.pyright.setup {
 
 -- Enable tiny inline diagnostics on in python files
 -- if vim.bo.filetype == 'python' then
-  vim.diagnostic.config({ virtual_text = false })
+vim.diagnostic.config({ virtual_text = false })
 -- end
 

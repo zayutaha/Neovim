@@ -46,5 +46,9 @@ return {
     opts = function()
       require("configs.null-ls")
     end,
-  }
+  },
+  {
+    "tpope/vim-fugitive",
+    lazy = false,
+  },
 }
