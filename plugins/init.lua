@@ -30,6 +30,7 @@ return {
         "pyright",
         "mypy",
         "ruff-lsp",
+	"typescript-language-server"
       },
     },
   },
