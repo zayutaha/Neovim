@@ -1,11 +1,11 @@
 return {
   {
     "stevearc/conform.nvim",
-    event = 'BufWritePre',
+    event = "BufWritePre",
     opts = require "configs.conform",
   },
 
-   {
+  {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"
@@ -30,7 +30,9 @@ return {
         "pyright",
         "mypy",
         "ruff-lsp",
-	"typescript-language-server"
+        "typescript-language-server",
+        "tailwind-language-server",
+        "eslint-lsp",
       },
     },
   },
@@ -43,13 +45,34 @@ return {
   },
   {
     "nvimtools/none-ls.nvim",
-    ft = {"python"},
+    ft = { "python" },
     opts = function()
-      require("configs.null-ls")
+      require "configs.null-ls"
     end,
   },
   {
     "tpope/vim-fugitive",
     lazy = false,
+  },
+  {
+    "windwp/nvim-ts-autotag",
+    ft = {
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+    },
+    config = function()
+      require("nvim-ts-autotag").setup()
+    end,
+  },
+  {
+    "folke/trouble.nvim",
+    cmd = "Trouble",
+    opts = {},
+    lazy = false,
+    config = function()
+      require "configs.trouble"
+    end
   },
 }
