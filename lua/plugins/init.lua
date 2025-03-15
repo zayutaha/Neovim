@@ -22,6 +22,9 @@ return {
         "vimdoc",
         "html",
         "css",
+        "rust",
+        "typescript",
+        "go",
       },
     },
   },
@@ -36,6 +39,7 @@ return {
         "tailwind-language-server",
         "eslint-lsp",
         "rust-analyzer",
+        "gopls",
       },
     },
   },
@@ -49,18 +53,6 @@ return {
   {
     "tpope/vim-fugitive",
     lazy = false,
-  },
-  {
-    "windwp/nvim-ts-autotag",
-    ft = {
-      "javascript",
-      "javascriptreact",
-      "typescript",
-      "typescriptreact",
-    },
-    config = function()
-      require("nvim-ts-autotag").setup()
-    end,
   },
   {
     "folke/trouble.nvim",
@@ -93,6 +85,9 @@ return {
       "nvim-tree/nvim-web-devicons",
     },
   },
+  {
+    "mfussenegger/nvim-dap",
+  },
   -- rust
   {
     "mrcjkb/rustaceanvim",
@@ -122,5 +117,39 @@ return {
       vim.g.rustfmt_autosave = 1
     end,
   },
-  --
+  -- typescript 
+{
+    "windwp/nvim-ts-autotag",
+    ft = {
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+    },
+    config = function()
+      require("nvim-ts-autotag").setup()
+    end,
+  },
+  -- go 
+  {
+    "leoluz/nvim-dap-go",
+    ft = "go",
+    dependencies = "mfussenegger/nvim-dap",
+    config = function (_, opts)
+      require("dap-go").setup(opts)
+    end
+  },
+  {
+    "olexsmir/gopher.nvim",
+    ft = "go",
+    config = function(_, opts)
+      require("gopher").setup(opts)
+    end,
+    build = function()
+      vim.cmd [[silent! GoInstallDeps]]
+    end,
+  },
+  commands = {
+    gomodifytags = "gomodifytags",
+  },
 }
