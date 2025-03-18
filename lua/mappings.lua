@@ -65,3 +65,8 @@ end, { noremap = true, silent = true, desc = "Debug last go test" })
 map("n", "<leader>gsj", ":GoTagAdd json<CR>", { noremap = true, silent = true, desc = "Add json struct tags" })
 
 map("n", "<leader>gsy", ":GoTagAdd yaml<CR>", { noremap = true, silent = true, desc = "Add yaml struct tags" })
+
+-- go
+-- all the go remaps start with gs
+map("n", "<leader>gse", ":GoIfErr <CR> ", { noremap = true, silent = true, desc = "If err return nil" })
+map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, desc = "Go Mod Tidy" })
