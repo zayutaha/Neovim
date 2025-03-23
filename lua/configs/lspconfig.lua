@@ -1,8 +1,6 @@
 -- load defaults i.e lua_lsp
 require("nvchad.configs.lspconfig").defaults()
 
-vim.diagnostic.config({ virtual_text = false })
-
 local lspconfig = require "lspconfig"
 
 local servers = { "html", "cssls", "ts_ls", "eslint", "tailwindcss"}
