@@ -70,3 +70,6 @@ map("n", "<leader>gsy", ":GoTagAdd yaml<CR>", { noremap = true, silent = true, d
 -- all the go remaps start with gs
 map("n", "<leader>gse", ":GoIfErr <CR> ", { noremap = true, silent = true, desc = "If err return nil" })
 map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, desc = "Go Mod Tidy" })
+
+-- rust
+map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = true, desc = "Restart Rust analyzer" })
