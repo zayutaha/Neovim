@@ -43,13 +43,13 @@ return {
       },
     },
   },
-  {
-    "rachartier/tiny-inline-diagnostic.nvim",
-    lazy = false,
-    config = function()
-      require("tiny-inline-diagnostic").setup()
-    end,
-  },
+  -- {
+  --   "rachartier/tiny-inline-diagnostic.nvim",
+  --   event = "VeryLazy",
+  --   config = function()
+  --     require("tiny-inline-diagnostic").setup()
+  --   end,
+  -- },
   {
     "tpope/vim-fugitive",
     lazy = false,
