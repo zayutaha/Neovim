@@ -5,7 +5,7 @@ vim.diagnostic.config({ virtual_text = false })
 
 local lspconfig = require "lspconfig"
 
-local servers = { "html", "cssls", "ts_ls", "eslint", "tailwindcss","python-lsp-server" }
+local servers = { "html", "cssls", "ts_ls", "eslint", "tailwindcss"}
 local nvlsp = require "nvchad.configs.lspconfig"
 local util = require "lspconfig/util"
 
