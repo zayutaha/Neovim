@@ -73,3 +73,5 @@ map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, des
 
 -- rust
 map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = true, desc = "Restart Rust analyzer" })
+map("n", "<leader>rt", ":RustLsp testables<CR> ", { noremap = true, silent = true, desc = "Rust testables" })
+
