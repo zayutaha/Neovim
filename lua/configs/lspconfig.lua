@@ -34,7 +34,8 @@ lspconfig.pyright.setup {
       },
     },
   },
-}-- Custom go setup
+}
+-- Custom go setup
 lspconfig.gopls.setup {
   on_attach = nvlsp.on_attach,
   capabilities = nvlsp.capabilities,
@@ -62,3 +63,5 @@ lspconfig.gopls.setup {
     },
   },
 }
+
+

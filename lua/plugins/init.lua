@@ -45,6 +45,7 @@ return {
   },
   {
     "rachartier/tiny-inline-diagnostic.nvim",
+    ft = {"rust", "typescript", "javascript"},
     lazy = false,
     config = function()
       require("tiny-inline-diagnostic").setup()
@@ -814,4 +815,25 @@ return {
       end,
     },
   },
+  {
+    "ThePrimeagen/refactoring.nvim",
+    ft = {"python", "lua", "rust"},
+    dependencies = {
+      { "nvim-lua/plenary.nvim" },
+      { "nvim-treesitter/nvim-treesitter" },
+    },
+    config = function()
+      require("refactoring").setup()
+    end,
+  },
+  {
+    "nvimtools/none-ls.nvim",
+    ft = { "python" },
+    dependencies = {
+      "nvimtools/none-ls-extras.nvim",
+    },
+    config = function()
+      require("configs.none-ls")
+    end,
+   }
 }
