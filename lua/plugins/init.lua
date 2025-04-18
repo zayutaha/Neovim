@@ -1,18 +1,22 @@
 local cmp = require "cmp"
 
 return {
+  -- Format files before saving
   {
     "stevearc/conform.nvim",
     event = "BufWritePre",
     opts = require "configs.conform",
   },
 
+  -- LSP configuration
   {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"
     end,
   },
+
+  -- Treesitter configurations for syntax highlighting and more
   {
     "nvim-treesitter/nvim-treesitter",
     opts = {
@@ -28,33 +32,44 @@ return {
       },
     },
   },
+
+  -- Install required language servers and tools
   {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
-        "pyright",
-        "mypy",
-        "ruff-lsp",
-        "typescript-language-server",
-        "tailwind-language-server",
+        "actionlint",
+        "black",
+        "css-lsp",
         "eslint-lsp",
-        "rust-analyzer",
+        "golangci-lint-langserver",
         "gopls",
+        "html-lsp",
+        "lua-language-server",
+        "mypy",
+        "pylint",
+        "pyright",
+        "python-lsp-server",
+        "rust-analyzer",
+        "stylua",
+        "tailwindcss-language-server",
+        "typescript-language-server",
       },
     },
   },
+
+  -- Inline diagnostics for Rust, TypeScript, and JavaScript
   {
     "rachartier/tiny-inline-diagnostic.nvim",
-    ft = {"rust", "typescript", "javascript"},
-    lazy = false,
+    event = "VeryLazy",
+    priority = 1000,
     config = function()
       require("tiny-inline-diagnostic").setup()
+      vim.diagnostic.config { virtual_text = false }
     end,
   },
-  {
-    "tpope/vim-fugitive",
-    lazy = false,
-  },
+
+  -- LSP diagnostics and trouble list
   {
     "folke/trouble.nvim",
     cmd = "Trouble",
@@ -64,6 +79,8 @@ return {
       require "configs.trouble"
     end,
   },
+
+  -- Auto-completion setup using nvim-cmp
   {
     "hrsh7th/nvim-cmp",
     opts = function()
@@ -77,19 +94,18 @@ return {
       return M
     end,
   },
+
+  -- View and manage markdown files
   {
     "OXY2DEV/markview.nvim",
     lazy = false,
-
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "nvim-tree/nvim-web-devicons",
     },
   },
-  {
-    "mfussenegger/nvim-dap",
-  },
-  -- rust
+
+  -- Rust-specific plugin for enhanced editing and LSP support
   {
     "mrcjkb/rustaceanvim",
     version = "^4",
@@ -99,6 +115,8 @@ return {
       require "configs.rustaceanvim"
     end,
   },
+
+  -- Rust crate management via Cargo
   {
     "saecki/crates.nvim",
     ft = { "toml" },
@@ -111,6 +129,8 @@ return {
       crates.show()
     end,
   },
+
+  -- Rust formatting on save
   {
     "rust-lang/rust.vim",
     ft = "rust",
@@ -118,7 +138,8 @@ return {
       vim.g.rustfmt_autosave = 1
     end,
   },
-  -- typescript
+
+  -- TypeScript/JavaScript tag auto-closing
   {
     "windwp/nvim-ts-autotag",
     ft = {
@@ -131,7 +152,8 @@ return {
       require("nvim-ts-autotag").setup()
     end,
   },
-  -- go
+
+  -- Go debugging support
   {
     "leoluz/nvim-dap-go",
     ft = "go",
@@ -140,6 +162,8 @@ return {
       require("dap-go").setup(opts)
     end,
   },
+
+  -- Go specific plugin for Go development
   {
     "olexsmir/gopher.nvim",
     ft = "go",
@@ -150,10 +174,9 @@ return {
       vim.cmd [[silent! GoInstallDeps]]
     end,
   },
-  commands = {
-    gomodifytags = "gomodifytags",
-  },
-  {
+
+  -- File and buffer management with Snacks
+    {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
@@ -678,7 +701,7 @@ return {
           _G.bt = function()
             Snacks.debug.backtrace()
           end
-          vim.print = _G.dd -- Override print to use snacks for `:=` command
+          vim.print = _G.dd -- Override print to use snacks for := command
 
           -- Create some toggle mappings
           Snacks.toggle.option("spell", { name = "Spelling" }):map "<leader>us"
@@ -698,6 +721,8 @@ return {
       })
     end,
   },
+
+  -- Neotest for running tests in Neovim
   {
     "nvim-neotest/neotest",
     dependencies = {
@@ -714,9 +739,10 @@ return {
       }
     end,
   },
+
+  -- Python import management
   {
     "kiyoon/python-import.nvim",
-    -- build = "pipx install . --force",
     build = "uv tool install . --force --reinstall",
     keys = {
       {
@@ -726,98 +752,16 @@ return {
         end,
         mode = { "i", "n" },
         silent = true,
-        desc = "Add python import",
+        desc = "Add Python import",
         ft = "python",
       },
-      {
-        "<M-CR>",
-        function()
-          require("python_import.api").add_import_current_selection_and_notify()
-        end,
-        mode = "x",
-        silent = true,
-        desc = "Add python import",
-        ft = "python",
-      },
-      {
-        "<space>i",
-        function()
-          require("python_import.api").add_import_current_word_and_move_cursor()
-        end,
-        mode = "n",
-        silent = true,
-        desc = "Add python import and move cursor",
-        ft = "python",
-      },
-      {
-        "<space>i",
-        function()
-          require("python_import.api").add_import_current_selection_and_move_cursor()
-        end,
-        mode = "x",
-        silent = true,
-        desc = "Add python import and move cursor",
-        ft = "python",
-      },
-      {
-        "<space>tr",
-        function()
-          require("python_import.api").add_rich_traceback()
-        end,
-        silent = true,
-        desc = "Add rich traceback",
-        ft = "python",
-      },
-    },
-    opts = {
-      -- Example 1:
-      -- Default behaviour for `tqdm` is `from tqdm.auto import tqdm`.
-      -- If you want to change it to `import tqdm`, you can set `import = {"tqdm"}` and `import_from = {tqdm = nil}` here.
-      -- If you want to change it to `from tqdm import tqdm`, you can set `import_from = {tqdm = "tqdm"}` here.
-
-      -- Example 2:
-      -- Default behaviour for `logger` is `import logging`, ``, `logger = logging.getLogger(__name__)`.
-      -- If you want to change it to `import my_custom_logger`, ``, `logger = my_custom_logger.get_logger()`,
-      -- you can set `statement_after_imports = {logger = {"import my_custom_logger", "", "logger = my_custom_logger.get_logger()"}}` here.
-      extend_lookup_table = {
-        ---@type string[]
-        import = {
-          -- "tqdm",
-        },
-
-        ---@type table<string, string>
-        import_as = {
-          -- These are the default values. Here for demonstration.
-          -- np = "numpy",
-          -- pd = "pandas",
-        },
-
-        ---@type table<string, string>
-        import_from = {
-          -- tqdm = nil,
-          -- tqdm = "tqdm",
-        },
-
-        ---@type table<string, string[]>
-        statement_after_imports = {
-          -- logger = { "import my_custom_logger", "", "logger = my_custom_logger.get_logger()" },
-        },
-      },
-
-      ---Return nil to indicate no match is found and continue with the default lookup
-      ---Return a table to stop the lookup and use the returned table as the result
-      ---Return an empty table to stop the lookup. This is useful when you want to add to wherever you need to.
-      ---@type fun(winnr: integer, word: string, ts_node: TSNode?): string[]?
-      custom_function = function(winnr, word, ts_node)
-        -- if vim.endswith(word, "_DIR") then
-        --   return { "from my_module import " .. word }
-        -- end
-      end,
     },
   },
+
+  -- Refactoring tools for Python, Lua, and Rust
   {
     "ThePrimeagen/refactoring.nvim",
-    ft = {"python", "lua", "rust"},
+    ft = { "python", "lua", "rust" },
     dependencies = {
       { "nvim-lua/plenary.nvim" },
       { "nvim-treesitter/nvim-treesitter" },
@@ -826,6 +770,8 @@ return {
       require("refactoring").setup()
     end,
   },
+
+  -- None-ls for external LSP integrations
   {
     "nvimtools/none-ls.nvim",
     ft = { "python" },
@@ -833,7 +779,7 @@ return {
       "nvimtools/none-ls-extras.nvim",
     },
     config = function()
-      require("configs.none-ls")
+      require "configs.none-ls"
     end,
-   }
+  },
 }
