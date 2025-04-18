@@ -38,6 +38,7 @@ return {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
+        "isort",
         "actionlint",
         "black",
         "css-lsp",
@@ -761,7 +762,7 @@ return {
   -- Refactoring tools for Python, Lua, and Rust
   {
     "ThePrimeagen/refactoring.nvim",
-    ft = { "python", "lua", "rust" },
+    ft = { "python", "lua", "rust", "typescript", "javascript" },
     dependencies = {
       { "nvim-lua/plenary.nvim" },
       { "nvim-treesitter/nvim-treesitter" },
