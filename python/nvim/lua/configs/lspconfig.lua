@@ -5,7 +5,7 @@ vim.diagnostic.config({ virtual_text = false })
 
 local lspconfig = require "lspconfig"
 
-local servers = { "html", "cssls", "ts_ls", "eslint"}
+local servers = { "html", "cssls", "ts_ls", "eslint", "tailwindcss"}
 local nvlsp = require "nvchad.configs.lspconfig"
 local util = require "lspconfig/util"
 
@@ -18,6 +18,23 @@ for _, lsp in ipairs(servers) do
   }
 end
 
+-- Needs to be configured explicity due to root_dir
+lspconfig.pyright.setup {
+  root_dir = vim.loop.cwd,
+  on_attach = nvlsp.on_attach,
+  on_init = nvlsp.on_init,
+  capabilities = nvlsp.capabilities,
+  settings = {
+    python = {
+      analysis = {
+        autoImportCompletions = true,  -- Enables auto-import suggestions
+        typeCheckingMode = "basic",    -- Optional: Adjust strictness ("off", "basic", "strict")
+        diagnosticMode = "workspace",  -- Optional: Controls diagnostic scope
+        useLibraryCodeForTypes = true, -- Optional: Improves type inference
+      },
+    },
+  },
+}
 -- Custom go setup
 lspconfig.gopls.setup {
   on_attach = nvlsp.on_attach,
@@ -46,3 +63,5 @@ lspconfig.gopls.setup {
     },
   },
 }
+
+

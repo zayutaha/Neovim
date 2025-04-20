@@ -73,6 +73,20 @@ map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, des
 
 -- rust
 map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = true, desc = "Restart Rust analyzer" })
+map("n", "<leader>rt", ":RustLsp testables<CR> ", { noremap = true, silent = true, desc = "Rust testables" })
+
+-- Refactoring
+map("x", "<leader>re", ":Refactor extract ", { noremap = true, silent = true, desc = "Refactor extract" })
+map("x", "<leader>rf", ":Refactor extract_to_file ", { noremap = true, silent = true, desc = "Refactor extract to file" })
+
+map("x", "<leader>rv", ":Refactor extract_var ", { noremap = true, silent = true, desc = "Refactor extract var" })
+
+map({ "n", "x" }, "<leader>ri", ":Refactor inline_var", { noremap = true, silent = true, desc = "Refactor inline var" })
+
+map("n", "<leader>rI", ":Refactor inline_func", { noremap = true, silent = true, desc = "Refactor inline func" })
+
+map("n", "<leader>rb", ":Refactor extract_block", { noremap = true, silent = true, desc = "Refactor extract block" })
+map("n", "<leader>rbf", ":Refactor extract_block_to_file", { noremap = true, silent = true, desc = "Refactor extract block to file" })
 
 map("n", "<leader>ca", ":lua vim.lsp.buf.code_action() <CR>", { noremap = true, silent = true, desc = "Code actions" })
 
