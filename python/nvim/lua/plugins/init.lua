@@ -45,7 +45,7 @@ return {
   },
   {
     "rachartier/tiny-inline-diagnostic.nvim",
-    ft = {"rust", "typescript", "javascript"},
+    ft = { "rust", "typescript", "javascript" },
     lazy = false,
     config = function()
       require("tiny-inline-diagnostic").setup()
@@ -519,13 +519,6 @@ return {
         desc = "Goto Implementation",
       },
       {
-        "gy",
-        function()
-          Snacks.picker.lsp_type_definitions()
-        end,
-        desc = "Goto T[y]pe Definition",
-      },
-      {
         "<leader>ss",
         function()
           Snacks.picker.lsp_symbols()
@@ -822,7 +815,18 @@ return {
       "nvimtools/none-ls-extras.nvim",
     },
     config = function()
-      require("configs.none-ls")
+      require "configs.none-ls"
     end,
-   }
+  },
+ -- TODO: should only load if in a git repo
+  {
+    "ruifm/gitlinker.nvim",
+    lazy = false,
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    config = function()
+      require("gitlinker").setup()
+    end,
+  },
 }
