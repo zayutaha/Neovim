@@ -77,15 +77,6 @@ return {
     end,
   },
   {
-    "OXY2DEV/markview.nvim",
-    lazy = false,
-
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-tree/nvim-web-devicons",
-    },
-  },
-  {
     "mfussenegger/nvim-dap",
   },
   -- rust
@@ -684,5 +675,74 @@ return {
     config = function()
       require("gitlinker").setup()
     end,
+  },
+  {
+    "3rd/image.nvim",
+    lazy = false,
+    config = function()
+      require("image").setup({
+        backend = "kitty",
+      })
+    end,
+  },
+  {
+    "3rd/diagram.nvim",
+    dependencies = {
+      "3rd/image.nvim",
+    },
+    ft = {"markdown"},
+    config = function()
+      require("diagram").setup {
+        integrations = {
+          require "diagram.integrations.markdown",
+          require "diagram.integrations.neorg",
+        },
+        renderer_options = {
+          mermaid = {
+            theme = "forest",
+          },
+          plantuml = {
+            charset = "utf-8",
+          },
+          d2 = {
+            theme_id = 1,
+          },
+          gnuplot = {
+            theme = "dark",
+            size = "800,600",
+          },
+        },
+      }
+    end,
+    opts = { -- you can just pass {}, defaults below
+      events = {
+        render_buffer = { "InsertLeave", "BufWinEnter", "TextChanged" },
+        clear_buffer = { "BufLeave" },
+      },
+      renderer_options = {
+        mermaid = {
+          background = "transparent", -- nil | "transparent" | "white" | "#hex"
+          theme = "dark", -- nil | "default" | "dark" | "forest" | "neutral"
+          scale = 1, -- nil | 1 (default) | 2  | 3 | ...
+          width = nil, -- nil | 800 | 400 | ...
+          height = nil, -- nil | 600 | 300 | ...
+        },
+        plantuml = {
+          charset = nil,
+        },
+        d2 = {
+          theme_id = nil,
+          dark_theme_id = nil,
+          scale = nil,
+          layout = nil,
+          sketch = nil,
+        },
+        gnuplot = {
+          size = nil, -- nil | "800,600" | ...
+          font = nil, -- nil | "Arial,12" | ...
+          theme = nil, -- nil | "light" | "dark" | custom theme string
+        },
+      },
+    },
   },
 }
