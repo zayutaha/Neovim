@@ -1,4 +1,5 @@
 local lspconfig = require "lspconfig"
+local util = require "lspconfig.util"
 
 local nvlsp = require "nvchad.configs.lspconfig"
 

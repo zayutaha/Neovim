@@ -53,10 +53,6 @@ return {
     end,
   },
   {
-    "tpope/vim-fugitive",
-    lazy = false,
-  },
-  {
     "folke/trouble.nvim",
     cmd = "Trouble",
     opts = {},
