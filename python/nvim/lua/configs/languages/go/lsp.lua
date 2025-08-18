@@ -1,0 +1,31 @@
+local lspconfig = require "lspconfig"
+
+local nvlsp = require "nvchad.configs.lspconfig"
+
+lspconfig.gopls.setup {
+  on_attach = nvlsp.on_attach,
+  capabilities = nvlsp.capabilities,
+  cmd = { "gopls" },
+  filetypes = { "go", "gomod", "gowork", "gotmpl" },
+  root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+  settings = {
+    gopls = {
+      completeUnimported = true,
+      usePlaceholders = true,
+      staticcheck = true,
+      codelenses = {
+        generate = true,
+        gc_details = true,
+        test = true,
+        tidy = true,
+      },
+      analyses = {
+        unusedparams = true,
+        nilness = true,
+        shadow = true,
+        unusedwrite = true,
+      },
+      gofumpt = true,
+    },
+  },
+}
