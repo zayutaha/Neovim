@@ -33,6 +33,7 @@ return {
     opts = {
       ensure_installed = {
         "pyright",
+        "pylint",
         "mypy",
         "ruff-lsp",
         "typescript-language-server",
@@ -61,7 +62,7 @@ return {
     opts = {},
     lazy = false,
     config = function()
-      require "configs.trouble"
+      require "configs.tools.trouble"
     end,
   },
   {
@@ -806,7 +807,7 @@ return {
       "nvimtools/none-ls-extras.nvim",
     },
     config = function()
-      require "configs.none-ls"
+      require "configs.tools.none-ls"
     end,
   },
   -- TODO: should only load if in a git repo
