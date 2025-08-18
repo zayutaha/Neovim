@@ -87,7 +87,7 @@ return {
     ft = { "rust" },
     dependencies = "neovim/nvim-lspconfig",
     config = function()
-      require "configs.rustaceanvim"
+      require "configs.languages.rust.rustaceanvim"
     end,
   },
   {

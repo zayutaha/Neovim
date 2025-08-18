@@ -13,6 +13,6 @@ vim.g.rustaceanvim = {
           command = "check",
         },
       },
-    }
-  }
+    },
+  },
 }

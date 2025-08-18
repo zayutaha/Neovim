@@ -24,8 +24,8 @@ local options = {
           },
         },
       },
-    }
-  }
+    },
+  },
 }
 
 return options
