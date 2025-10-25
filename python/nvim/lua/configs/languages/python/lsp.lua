@@ -7,6 +7,13 @@ local function get_python_path()
   if venv then
     return venv .. "/bin/python"
   end
+
+  local pyproject = vim.fn.findfile("pyproject.toml", ".;")
+  if pyproject ~= "" then
+    local pyproject_dir = vim.fn.fnamemodify(pyproject, ":h")
+    return pyproject_dir .. "/.venv/bin/python"
+  end
+
   return "python3"
 end
 

@@ -1,3 +1,7 @@
-lazy-lock.json
+lazy-lock.*
+python/nvim/lazy-lock.json
+github-copilot/
+lazygit/
 **/github-copilot/
 **/lazygit/
+**/lazy-lock.json
