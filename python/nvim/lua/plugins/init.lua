@@ -33,6 +33,7 @@ return {
     opts = {
       ensure_installed = {
         "pyright",
+        "pylint",
         "mypy",
         "ruff-lsp",
         "typescript-language-server",
@@ -52,16 +53,12 @@ return {
     end,
   },
   {
-    "tpope/vim-fugitive",
-    lazy = false,
-  },
-  {
     "folke/trouble.nvim",
     cmd = "Trouble",
     opts = {},
     lazy = false,
     config = function()
-      require "configs.trouble"
+      require "configs.tools.trouble"
     end,
   },
   {
@@ -78,15 +75,6 @@ return {
     end,
   },
   {
-    "OXY2DEV/markview.nvim",
-    lazy = false,
-
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "nvim-tree/nvim-web-devicons",
-    },
-  },
-  {
     "mfussenegger/nvim-dap",
   },
   -- rust
@@ -96,7 +84,7 @@ return {
     ft = { "rust" },
     dependencies = "neovim/nvim-lspconfig",
     config = function()
-      require "configs.rustaceanvim"
+      require "configs.languages.rust.rustaceanvim"
     end,
   },
   {
@@ -815,10 +803,10 @@ return {
       "nvimtools/none-ls-extras.nvim",
     },
     config = function()
-      require "configs.none-ls"
+      require "configs.tools.none-ls"
     end,
   },
- -- TODO: should only load if in a git repo
+  -- TODO: should only load if in a git repo
   {
     "ruifm/gitlinker.nvim",
     lazy = false,
@@ -828,5 +816,166 @@ return {
     config = function()
       require("gitlinker").setup()
     end,
+  },
+  {
+    "3rd/image.nvim",
+    lazy = false,
+    config = function()
+      require("image").setup {
+        backend = "kitty",
+      }
+    end,
+  },
+  {
+    "3rd/diagram.nvim",
+    dependencies = {
+      "3rd/image.nvim",
+    },
+    ft = { "markdown" },
+    config = function()
+      require("diagram").setup {
+        integrations = {
+          require "diagram.integrations.markdown",
+          require "diagram.integrations.neorg",
+        },
+        renderer_options = {
+          mermaid = {
+            theme = "forest",
+          },
+          plantuml = {
+            charset = "utf-8",
+          },
+          d2 = {
+            theme_id = 1,
+          },
+          gnuplot = {
+            theme = "dark",
+            size = "800,600",
+          },
+        },
+      }
+    end,
+    opts = { -- you can just pass {}, defaults below
+      command_paths = {
+        mermaid = "/opt/homebrew/bin/mmdc", -- Adjust this path based on your installation
+      },
+      events = {
+        render_buffer = { "InsertLeave", "BufWinEnter", "TextChanged" },
+        clear_buffer = { "BufLeave" },
+      },
+      renderer_options = {
+        mermaid = {
+          background = "transparent",
+          theme = "forest",
+          width = 800,
+          height = 400,
+          scale = 1,
+        },
+      },
+    },
+  },
+  {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    build = ":Copilot auth",
+    opts = {
+      suggestion = { enabled = false },
+      panel = { enabled = false },
+    },
+  },
+  {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    dependencies = {
+      { "github/copilot.vim" },
+      { "nvim-lua/plenary.nvim", branch = "master" },
+    },
+    build = "make tiktoken",
+    opts = {},
+  },
+
+  {
+    "yetone/avante.nvim",
+    build = function()
+      if vim.fn.has "win32" == 1 then
+        return "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
+      else
+        return "make"
+      end
+    end,
+    event = "VeryLazy",
+    version = false,
+    opts = require "configs.tools.ai",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "MunifTanjim/nui.nvim",
+      "echasnovski/mini.pick",
+      "nvim-telescope/telescope.nvim",
+      "hrsh7th/nvim-cmp",
+      "ibhagwan/fzf-lua",
+      "stevearc/dressing.nvim",
+      "folke/snacks.nvim",
+      "nvim-tree/nvim-web-devicons",
+      "zbirenbaum/copilot.lua",
+      {
+        "HakonHarnes/img-clip.nvim",
+        event = "VeryLazy",
+        opts = {
+          default = {
+            embed_image_as_base64 = false,
+            prompt_for_file_name = false,
+            drag_and_drop = {
+              insert_mode = true,
+            },
+            use_absolute_path = true,
+          },
+        },
+      },
+      {
+        "MeanderingProgrammer/render-markdown.nvim",
+        opts = {
+          file_types = { "markdown", "Avante" },
+        },
+        ft = { "markdown", "Avante" },
+      },
+    },
+  },
+  {
+    "brenton-leighton/multiple-cursors.nvim",
+    version = "*",
+    opts = {},
+    keys = {
+      { "<C-j>", "<Cmd>MultipleCursorsAddDown<CR>", mode = { "n", "x" }, desc = "Add cursor and move down" },
+      { "<C-k>", "<Cmd>MultipleCursorsAddUp<CR>", mode = { "n", "x" }, desc = "Add cursor and move up" },
+
+      { "<C-Up>", "<Cmd>MultipleCursorsAddUp<CR>", mode = { "n", "i", "x" }, desc = "Add cursor and move up" },
+      { "<C-Down>", "<Cmd>MultipleCursorsAddDown<CR>", mode = { "n", "i", "x" }, desc = "Add cursor and move down" },
+
+      { "<C-LeftMouse>", "<Cmd>MultipleCursorsMouseAddDelete<CR>", mode = { "n", "i" }, desc = "Add or remove cursor" },
+
+      {
+        "<Leader>m",
+        "<Cmd>MultipleCursorsAddVisualArea<CR>",
+        mode = { "x" },
+        desc = "Add cursors to the lines of the visual area",
+      },
+
+      { "<Leader>a", "<Cmd>MultipleCursorsAddMatches<CR>", mode = { "n", "x" }, desc = "Add cursors to cword" },
+      {
+        "<Leader>A",
+        "<Cmd>MultipleCursorsAddMatchesV<CR>",
+        mode = { "n", "x" },
+        desc = "Add cursors to cword in previous area",
+      },
+
+      {
+        "<Leader>d",
+        "<Cmd>MultipleCursorsAddJumpNextMatch<CR>",
+        mode = { "n", "x" },
+        desc = "Add cursor and jump to next cword",
+      },
+      { "<Leader>D", "<Cmd>MultipleCursorsJumpNextMatch<CR>", mode = { "n", "x" }, desc = "Jump to next cword" },
+
+      { "<Leader>l", "<Cmd>MultipleCursorsLock<CR>", mode = { "n", "x" }, desc = "Lock virtual cursors" },
+    },
   },
 }
