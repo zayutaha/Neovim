@@ -4,43 +4,7 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
--- Trouble
-map(
-  "n",
-  "<leader>xx",
-  ":Trouble diagnostics toggle<CR>",
-  { noremap = true, silent = true, desc = "Diagnostics (Trouble)" }
-)
-map(
-  "n",
-  "<leader>xX",
-  ":Trouble diagnostics toggle filter.buf=0<CR>",
-  { noremap = true, silent = true, desc = "Buffer Diagnostics (Trouble)" }
-)
-map(
-  "n",
-  "<leader>cs",
-  ":Trouble symbols toggle focus=false<CR>",
-  { noremap = true, silent = true, desc = "Symbols (Trouble)" }
-)
-map(
-  "n",
-  "<leader>cl",
-  ":Trouble lsp toggle focus=false win.position=right<CR>",
-  { noremap = true, silent = true, desc = "LSP Definitions / references / ... (Trouble)" }
-)
-map(
-  "n",
-  "<leader>xL",
-  ":Trouble loclist toggle<CR>",
-  { noremap = true, silent = true, desc = "Location List (Trouble)" }
-)
-map(
-  "n",
-  "<leader>xQ",
-  ":Trouble qflist toggle<CR>",
-  { noremap = true, silent = true, desc = "Quickfix List (Trouble)" }
-)
+map("n", "<leader>ca", ":lua vim.lsp.buf.code_action() <CR>", { noremap = true, silent = true, desc = "Code actions" })
 
 -- Crates
 map("n", "<leader>rcu", function()
@@ -75,55 +39,132 @@ map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, des
 map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = true, desc = "Restart Rust analyzer" })
 map("n", "<leader>rt", ":RustLsp testables<CR> ", { noremap = true, silent = true, desc = "Rust testables" })
 
--- Refactoring
-map("x", "<leader>re", ":Refactor extract ", { noremap = true, silent = true, desc = "Refactor extract" })
-map(
-  "x",
-  "<leader>rf",
-  ":Refactor extract_to_file ",
-  { noremap = true, silent = true, desc = "Refactor extract to file" }
-)
+-- Snacks nvim
+---@diagnostic disable: undefined-global
+map("n", "<leader>,", function()
+  Snacks.picker.buffers()
+end, { desc = "Buffers" })
 
-map("x", "<leader>rv", ":Refactor extract_var ", { noremap = true, silent = true, desc = "Refactor extract var" })
+map("n", "<leader>gb", function()
+  Snacks.picker.git_branches()
+end, { desc = "Git Branches" })
 
-map({ "n", "x" }, "<leader>ri", ":Refactor inline_var", { noremap = true, silent = true, desc = "Refactor inline var" })
+map("n", "<leader>gl", function()
+  Snacks.picker.git_log()
+end, { desc = "Git Log" })
 
-map("n", "<leader>rI", ":Refactor inline_func", { noremap = true, silent = true, desc = "Refactor inline func" })
+map("n", "<leader>gL", function()
+  Snacks.picker.git_log_line()
+end, { desc = "Git Log Line" })
 
-map("n", "<leader>rb", ":Refactor extract_block", { noremap = true, silent = true, desc = "Refactor extract block" })
-map(
-  "n",
-  "<leader>rbf",
-  ":Refactor extract_block_to_file",
-  { noremap = true, silent = true, desc = "Refactor extract block to file" }
-)
+map("n", "<leader>gs", function()
+  Snacks.picker.git_status()
+end, { desc = "Git Status" })
 
-map("n", "<leader>ca", ":lua vim.lsp.buf.code_action() <CR>", { noremap = true, silent = true, desc = "Code actions" })
+map("n", "<leader>gS", function()
+  Snacks.picker.git_stash()
+end, { desc = "Git Stash" })
 
-map({ "n", "x" }, "<C-j>", "<Cmd>MultipleCursorsAddDown<CR>", { desc = "Add cursor and move down" })
-map({ "n", "x" }, "<C-k>", "<Cmd>MultipleCursorsAddUp<CR>", { desc = "Add cursor and move up" })
+map("n", "<leader>gd", function()
+  Snacks.picker.git_diff()
+end, { desc = "Git Diff (Hunks)" })
 
-map({ "n", "i", "x" }, "<C-Up>", "<Cmd>MultipleCursorsAddUp<CR>", { desc = "Add cursor and move up" })
-map({ "n", "i", "x" }, "<C-Down>", "<Cmd>MultipleCursorsAddDown<CR>", { desc = "Add cursor and move down" })
+map("n", "<leader>gf", function()
+  Snacks.picker.git_log_file()
+end, { desc = "Git Log File" })
 
-map({ "n", "i" }, "<C-LeftMouse>", "<Cmd>MultipleCursorsMouseAddDelete<CR>", { desc = "Add or remove cursor" })
+map("n", '<leader>s"', function()
+  Snacks.picker.registers()
+end, { desc = "Registers" })
 
-map("x", "<Leader>m", "<Cmd>MultipleCursorsAddVisualArea<CR>", { desc = "Add cursors to the lines of the visual area" })
+map("n", "<leader>sc", function()
+  Snacks.picker.command_history()
+end, { desc = "Command History" })
 
-map({ "n", "x" }, "<Leader>a", "<Cmd>MultipleCursorsAddMatches<CR>", { desc = "Add cursors to cword" })
-map(
-  { "n", "x" },
-  "<Leader>A",
-  "<Cmd>MultipleCursorsAddMatchesV<CR>",
-  { desc = "Add cursors to cword in previous area" }
-)
+map("n", "<leader>sd", function()
+  Snacks.picker.diagnostics()
+end, { desc = "Diagnostics" })
 
-map(
-  { "n", "x" },
-  "<Leader>d",
-  "<Cmd>MultipleCursorsAddJumpNextMatch<CR>",
-  { desc = "Add cursor and jump to next cword" }
-)
-map({ "n", "x" }, "<Leader>D", "<Cmd>MultipleCursorsJumpNextMatch<CR>", { desc = "Jump to next cword" })
+map("n", "<leader>sD", function()
+  Snacks.picker.diagnostics_buffer()
+end, { desc = "Buffer Diagnostics" })
 
-map({ "n", "x" }, "<Leader>l", "<Cmd>MultipleCursorsLock<CR>", { desc = "Lock virtual cursors" })
+map("n", "<leader>sj", function()
+  Snacks.picker.jumps()
+end, { desc = "Jumps" })
+
+map("n", "<leader>sp", function()
+  Snacks.picker.lazy()
+end, { desc = "Search for Plugin Spec" })
+
+map("n", "<leader>sq", function()
+  Snacks.picker.qflist()
+end, { desc = "Quickfix List" })
+
+map("n", "<leader>sR", function()
+  Snacks.picker.resume()
+end, { desc = "Resume" })
+
+map("n", "<leader>su", function()
+  Snacks.picker.undo()
+end, { desc = "Undo History" })
+
+map("n", "gd", function()
+  Snacks.picker.lsp_definitions()
+end, { desc = "Goto Definition" })
+
+map("n", "gD", function()
+  Snacks.picker.lsp_declarations()
+end, { desc = "Goto Declaration" })
+
+map("n", "gr", function()
+  Snacks.picker.lsp_references()
+end, { nowait = true, desc = "References" })
+
+map("n", "gI", function()
+  Snacks.picker.lsp_implementations()
+end, { desc = "Goto Implementation" })
+
+map("n", "<leader>ss", function()
+  Snacks.picker.lsp_symbols()
+end, { desc = "LSP Symbols" })
+
+map("n", "<leader>.", function()
+  Snacks.scratch()
+end, { desc = "Toggle Scratch Buffer" })
+
+map("n", "<leader>S", function()
+  Snacks.scratch.select()
+end, { desc = "Select Scratch Buffer" })
+
+map("n", "<leader>bd", function()
+  Snacks.bufdelete()
+end, { desc = "Delete Buffer" })
+
+map("n", "<leader>bo", function()
+  Snacks.bufdelete.other()
+end, { desc = "Close Other Buffers" })
+
+map("n", "<leader>cR", function()
+  Snacks.rename.rename_file()
+end, { desc = "Rename File" })
+
+map({ "n", "v" }, "<leader>gB", function()
+  Snacks.gitbrowse()
+end, { desc = "Git Browse" })
+
+map("n", "<leader>gg", function()
+  Snacks.lazygit()
+end, { desc = "Lazygit" })
+
+map("n", "<leader>un", function()
+  Snacks.notifier.hide()
+end, { desc = "Dismiss All Notifications" })
+
+map({ "n", "t" }, "]]", function()
+  Snacks.words.jump(vim.v.count1)
+end, { desc = "Next Reference" })
+
+map({ "n", "t" }, "[[", function()
+  Snacks.words.jump(-vim.v.count1)
+end, { desc = "Prev Reference" })
