@@ -127,47 +127,20 @@ return {
     end,
   },
   {
-    "nvim-neotest/neotest",
-    dependencies = {
-      "nvim-neotest/nvim-nio",
-      "nvim-lua/plenary.nvim",
-      "antoinemadec/FixCursorHold.nvim",
-      "nvim-treesitter/nvim-treesitter",
-    },
-    config = function()
-      require("neotest").setup {
-        adapters = {
-          require "rustaceanvim.neotest",
-        },
-      }
-    end,
-  },
-  {
     "kiyoon/python-import.nvim",
-    -- build = "pipx install . --force",
+    ft = {
+      "python",
+    },
     build = "uv tool install . --force --reinstall",
     opts = {
       pip_tool = "uv",
-      -- Example 1:
-      -- Default behaviour for `tqdm` is `from tqdm.auto import tqdm`.
-      -- If you want to change it to `import tqdm`, you can set `import = {"tqdm"}` and `import_from = {tqdm = nil}` here.
-      -- If you want to change it to `from tqdm import tqdm`, you can set `import_from = {tqdm = "tqdm"}` here.
-
-      -- Example 2:
-      -- Default behaviour for `logger` is `import logging`, ``, `logger = logging.getLogger(__name__)`.
-      -- If you want to change it to `import my_custom_logger`, ``, `logger = my_custom_logger.get_logger()`,
-      -- you can set `statement_after_imports = {logger = {"import my_custom_logger", "", "logger = my_custom_logger.get_logger()"}}` here.
       extend_lookup_table = {
-        ---@type string[]
-        import = {
-          -- "tqdm",
-        },
 
         ---@type table<string, string>
         import_as = {
           -- These are the default values. Here for demonstration.
-          -- np = "numpy",
-          -- pd = "pandas",
+          np = "numpy",
+          pd = "pandas",
         },
 
         ---@type table<string, string>
@@ -281,16 +254,6 @@ return {
     },
   },
   {
-    "CopilotC-Nvim/CopilotChat.nvim",
-    dependencies = {
-      { "github/copilot.vim" },
-      { "nvim-lua/plenary.nvim", branch = "master" },
-    },
-    build = "make tiktoken",
-    opts = {},
-  },
-
-  {
     "yetone/avante.nvim",
     build = function()
       if vim.fn.has "win32" == 1 then
@@ -335,12 +298,6 @@ return {
         ft = { "markdown", "Avante" },
       },
     },
-  },
-  {
-    "brenton-leighton/multiple-cursors.nvim",
-    version = "*",
-    lazy = false,
-    opts = {},
   },
   {
     "nvim-mini/mini.nvim",
