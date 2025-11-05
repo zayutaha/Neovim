@@ -1,5 +1,4 @@
 local lspconfig = require "lspconfig"
-
 local nvlsp = require "nvchad.configs.lspconfig"
 
 local function get_python_path()
@@ -17,7 +16,7 @@ local function get_python_path()
   return "python3"
 end
 
-lspconfig.pyright.setup {
+vim.lsp.config("pyright", {
   root_dir = vim.loop.cwd,
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
@@ -33,4 +32,4 @@ lspconfig.pyright.setup {
       },
     },
   },
-}
+})

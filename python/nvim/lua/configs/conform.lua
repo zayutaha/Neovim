@@ -2,7 +2,7 @@ local options = {
   formatters_by_ft = {
     lua = { "stylua" },
     python = { "isort", "black" },
-
+    --
     -- Web / Next.js stack
     javascript = { "prettierd", "prettier" },
     javascriptreact = { "prettierd", "prettier" },
