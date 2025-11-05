@@ -16,3 +16,7 @@ vim.schedule(function()
   require "configs.languages.python.lsp"
   require "configs.languages.go.lsp"
 end)
+
+vim.schedule(function()
+  vim.diagnostic.config { virtual_text = false }
+end)

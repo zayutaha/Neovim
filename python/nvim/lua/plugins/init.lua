@@ -148,8 +148,8 @@ return {
         ---@type table<string, string|vim.NIL>
         import_as = {
           -- These are the default values. Here for demonstration.
-          -- np = "numpy",
-          -- pd = "pandas",
+          np = "numpy",
+          pd = "pandas",
         },
 
         ---@type table<string, string|vim.NIL>
@@ -175,7 +175,7 @@ return {
       end,
     },
   },
-  "rcarriga/nvim-notify", -- optional,
+  "rcarriga/nvim-notify",
   {
     "nvimtools/none-ls.nvim",
     ft = { "python" },
