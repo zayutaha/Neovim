@@ -1,19 +1,22 @@
-require("nvchad.configs.lspconfig").defaults()
-require "configs.languages.typescript.lsp"
-require "configs.languages.python.lsp"
-require "configs.languages.go.lsp"
+local servers = {
+  "html",
+  "cssls",
+  "ts_ls",
+  "eslint",
+  "tailwindcss",
+  "gopls",
+  "pyright",
+}
 
-vim.diagnostic.config { virtual_text = false }
+vim.lsp.enable(servers)
 
-local lspconfig = require "lspconfig"
+vim.schedule(function()
+  require("nvchad.configs.lspconfig").defaults()
+  require "configs.languages.typescript.lsp"
+  require "configs.languages.python.lsp"
+  require "configs.languages.go.lsp"
+end)
 
-local servers = { "html", "cssls" }
-local nvlsp = require "nvchad.configs.lspconfig"
-
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = nvlsp.on_attach,
-    on_init = nvlsp.on_init,
-    capabilities = nvlsp.capabilities,
-  }
-end
+vim.schedule(function()
+  vim.diagnostic.config { virtual_text = false }
+end)

@@ -1,9 +1,8 @@
-local lspconfig = require "lspconfig"
 local util = require "lspconfig.util"
 
 local nvlsp = require "nvchad.configs.lspconfig"
 
-lspconfig.gopls.setup {
+vim.lsp.config["gopls"] = {
   on_attach = nvlsp.on_attach,
   capabilities = nvlsp.capabilities,
   cmd = { "gopls" },

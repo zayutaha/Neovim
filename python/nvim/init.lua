@@ -38,3 +38,6 @@ vim.schedule(function()
   require "mappings"
 end)
 
+vim.defer_fn(function()
+  vim.diagnostic.config { virtual_text = false }
+end, 100)
