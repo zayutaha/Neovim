@@ -36,5 +36,11 @@ require "nvchad.autocmds"
 
 vim.schedule(function()
   require "mappings"
+  vim.defer_fn(function()
+    vim.diagnostic.config { virtual_text = false }
+  end, 100)
 end)
 
+vim.defer_fn(function()
+  vim.diagnostic.config { virtual_text = false }
+end, 100)

@@ -1,5 +1,3 @@
-vim.diagnostic.config { virtual_text = false }
-
 local servers = {
   "html",
   "cssls",
