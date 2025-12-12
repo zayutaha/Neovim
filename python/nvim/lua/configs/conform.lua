@@ -1,7 +1,7 @@
 local options = {
   formatters_by_ft = {
     lua = { "stylua" },
-    python = { "isort", "black" },
+    python = { "ruff" },
 
     -- Web / Next.js stack
     javascript = { "prettierd", "prettier" },
@@ -16,7 +16,7 @@ local options = {
   },
 
   format_on_save = {
-    timeout_ms = 500,
+    timeout_ms = 1000,
     lsp_fallback = true,
   },
 }

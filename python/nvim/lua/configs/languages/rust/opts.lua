@@ -1,6 +1,8 @@
 local on_attach = require("nvchad.configs.lspconfig").on_attach
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
+local rustc_sysroot = vim.fn.system("rustc --print sysroot"):gsub("\n", "")
+
 local options = {
   server = {
     on_attach = on_attach,
@@ -8,24 +10,23 @@ local options = {
     settings = {
       ["rust-analyzer"] = {
         checkOnSave = true,
-        check = {
-          enable = true,
-          command = "check",
+        check = { enable = true, command = "check" },
+        rustcSource = rustc_sysroot .. "/lib/rustlib/src/rust",
+        cargo = {
+          extraEnv = { RUSTC_BOOTSTRAP = "1" },
+          allFeatures = true,
+          buildScripts = { enable = true },
         },
-        expandMacro = {
-          command = "cargo",
-          args = {
-            "+nightly",
-            "rustc",
-            "--",
-            "-Z",
-            "unstable-options",
-            "--pretty=expanded",
-          },
+        procMacro = {
+          enable = true,
+          attributes = { enable = true },
+        },
+        completion = {
+          autoimport = { enable = true },
         },
       },
     },
   },
 }
 
-return options
+vim.g.rustaceanvim = options
