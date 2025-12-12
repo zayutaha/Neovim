@@ -7,11 +7,14 @@ local options = {
   server = {
     on_attach = on_attach,
     capabilities = capabilities,
+    cmd_env = {
+      RUSTC_BOOTSTRAP = "1",
+    },
     settings = {
       ["rust-analyzer"] = {
         checkOnSave = true,
         check = { enable = true, command = "check" },
-        rustcSource = rustc_sysroot .. "/lib/rustlib/src/rust",
+        rustcSource = "discover",
         cargo = {
           extraEnv = { RUSTC_BOOTSTRAP = "1" },
           allFeatures = true,
