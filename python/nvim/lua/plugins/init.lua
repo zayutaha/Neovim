@@ -321,4 +321,9 @@ return {
     "alexpasmantier/krust.nvim",
     ft = "rust",
   },
+  {
+    "esmuellert/vscode-diff.nvim",
+    dependencies = { "MunifTanjim/nui.nvim" },
+    cmd = "CodeDiff",
+  },
 }
