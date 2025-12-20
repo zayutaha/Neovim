@@ -4,43 +4,7 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
--- Trouble
-map(
-  "n",
-  "<leader>xx",
-  ":Trouble diagnostics toggle<CR>",
-  { noremap = true, silent = true, desc = "Diagnostics (Trouble)" }
-)
-map(
-  "n",
-  "<leader>xX",
-  ":Trouble diagnostics toggle filter.buf=0<CR>",
-  { noremap = true, silent = true, desc = "Buffer Diagnostics (Trouble)" }
-)
-map(
-  "n",
-  "<leader>cs",
-  ":Trouble symbols toggle focus=false<CR>",
-  { noremap = true, silent = true, desc = "Symbols (Trouble)" }
-)
-map(
-  "n",
-  "<leader>cl",
-  ":Trouble lsp toggle focus=false win.position=right<CR>",
-  { noremap = true, silent = true, desc = "LSP Definitions / references / ... (Trouble)" }
-)
-map(
-  "n",
-  "<leader>xL",
-  ":Trouble loclist toggle<CR>",
-  { noremap = true, silent = true, desc = "Location List (Trouble)" }
-)
-map(
-  "n",
-  "<leader>xQ",
-  ":Trouble qflist toggle<CR>",
-  { noremap = true, silent = true, desc = "Quickfix List (Trouble)" }
-)
+map("n", "<leader>ca", ":lua vim.lsp.buf.code_action() <CR>", { noremap = true, silent = true, desc = "Code actions" })
 
 -- Crates
 map("n", "<leader>rcu", function()
@@ -73,6 +37,161 @@ map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, des
 
 -- rust
 map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = true, desc = "Restart Rust analyzer" })
+map("n", "<leader>rt", ":RustLsp testables<CR> ", { noremap = true, silent = true, desc = "Rust testables" })
 
-map("n", "<leader>ca", ":lua vim.lsp.buf.code_action() <CR>", { noremap = true, silent = true, desc = "Code actions" })
+-- Snacks nvim
+---@diagnostic disable: undefined-global
+map("n", "<leader>,", function()
+  Snacks.picker.buffers()
+end, { desc = "Buffers" })
 
+map("n", "<leader>gb", function()
+  Snacks.picker.git_branches()
+end, { desc = "Git Branches" })
+
+map("n", "<leader>gl", function()
+  Snacks.picker.git_log()
+end, { desc = "Git Log" })
+
+map("n", "<leader>gL", function()
+  Snacks.picker.git_log_line()
+end, { desc = "Git Log Line" })
+
+map("n", "<leader>gs", function()
+  Snacks.picker.git_status()
+end, { desc = "Git Status" })
+
+map("n", "<leader>gS", function()
+  Snacks.picker.git_stash()
+end, { desc = "Git Stash" })
+
+map("n", "<leader>gd", function()
+  Snacks.picker.git_diff()
+end, { desc = "Git Diff (Hunks)" })
+
+map("n", "<leader>gf", function()
+  Snacks.picker.git_log_file()
+end, { desc = "Git Log File" })
+
+map("n", '<leader>s"', function()
+  Snacks.picker.registers()
+end, { desc = "Registers" })
+
+map("n", "<leader>sc", function()
+  Snacks.picker.command_history()
+end, { desc = "Command History" })
+
+map("n", "<leader>sd", function()
+  Snacks.picker.diagnostics()
+end, { desc = "Diagnostics" })
+
+map("n", "<leader>sD", function()
+  Snacks.picker.diagnostics_buffer()
+end, { desc = "Buffer Diagnostics" })
+
+map("n", "<leader>sj", function()
+  Snacks.picker.jumps()
+end, { desc = "Jumps" })
+
+map("n", "<leader>sp", function()
+  Snacks.picker.lazy()
+end, { desc = "Search for Plugin Spec" })
+
+map("n", "<leader>sq", function()
+  Snacks.picker.qflist()
+end, { desc = "Quickfix List" })
+
+map("n", "<leader>sR", function()
+  Snacks.picker.resume()
+end, { desc = "Resume" })
+
+map("n", "<leader>su", function()
+  Snacks.picker.undo()
+end, { desc = "Undo History" })
+
+map("n", "gd", function()
+  Snacks.picker.lsp_definitions()
+end, { desc = "Goto Definition" })
+
+map("n", "gD", function()
+  Snacks.picker.lsp_declarations()
+end, { desc = "Goto Declaration" })
+
+map("n", "gr", function()
+  Snacks.picker.lsp_references()
+end, { nowait = true, desc = "References" })
+
+map("n", "gI", function()
+  Snacks.picker.lsp_implementations()
+end, { desc = "Goto Implementation" })
+
+map("n", "<leader>ss", function()
+  Snacks.picker.lsp_symbols()
+end, { desc = "LSP Symbols" })
+
+map("n", "<leader>.", function()
+  Snacks.scratch()
+end, { desc = "Toggle Scratch Buffer" })
+
+map("n", "<leader>S", function()
+  Snacks.scratch.select()
+end, { desc = "Select Scratch Buffer" })
+
+map("n", "<leader>bd", function()
+  Snacks.bufdelete()
+end, { desc = "Delete Buffer" })
+
+map("n", "<leader>bo", function()
+  Snacks.bufdelete.other()
+end, { desc = "Close Other Buffers" })
+
+map("n", "<leader>cR", function()
+  Snacks.rename.rename_file()
+end, { desc = "Rename File" })
+
+map({ "n", "v" }, "<leader>gB", function()
+  Snacks.gitbrowse()
+end, { desc = "Git Browse" })
+
+map("n", "<leader>gg", function()
+  Snacks.lazygit()
+end, { desc = "Lazygit" })
+
+map("n", "<leader>un", function()
+  Snacks.notifier.hide()
+end, { desc = "Dismiss All Notifications" })
+
+map({ "n", "t" }, "]]", function()
+  Snacks.words.jump(vim.v.count1)
+end, { desc = "Next Reference" })
+
+map({ "n", "t" }, "[[", function()
+  Snacks.words.jump(-vim.v.count1)
+end, { desc = "Prev Reference" })
+
+-- Python import
+map({ "i", "n" }, "<M-CR>", function()
+  require("python_import.api").add_import_current_word_and_notify()
+end, { silent = true, desc = "Add python import" })
+
+map("x", "<M-CR>", function()
+  require("python_import.api").add_import_current_selection_and_notify()
+end, { silent = true, desc = "Add python import" })
+
+map("n", "<leader>i", function()
+  require("python_import.api").add_import_current_word_and_move_cursor()
+end, { silent = true, desc = "Add python import and move cursor" })
+
+map("x", "<leader>i", function()
+  require("python_import.api").add_import_current_selection_and_move_cursor()
+end, { silent = true, desc = "Add python import and move cursor" })
+
+map("n", "<leader>tr", function()
+  require("python_import.api").add_rich_traceback()
+end, { silent = true, desc = "Add rich traceback" })
+
+-- Krust
+map("n", "<leader>k", function()
+  require("krust").render()
+end, { desc = "Krust Render" })
+--
