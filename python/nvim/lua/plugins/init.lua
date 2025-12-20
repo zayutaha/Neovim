@@ -175,7 +175,7 @@ return {
       end,
     },
   },
-  "rcarriga/nvim-notify",
+
   {
     "nvimtools/none-ls.nvim",
     ft = { "python" },
@@ -325,5 +325,11 @@ return {
     "esmuellert/vscode-diff.nvim",
     dependencies = { "MunifTanjim/nui.nvim" },
     cmd = "CodeDiff",
+  },
+  {
+    "m4xshen/hardtime.nvim",
+    lazy = false,
+    dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
+    opts = {},
   },
 }
