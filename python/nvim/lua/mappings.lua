@@ -189,3 +189,9 @@ end, { silent = true, desc = "Add python import and move cursor" })
 map("n", "<leader>tr", function()
   require("python_import.api").add_rich_traceback()
 end, { silent = true, desc = "Add rich traceback" })
+
+-- Krust
+map("n", "<leader>k", function()
+  require("krust").render()
+end, { desc = "Krust Render" })
+--

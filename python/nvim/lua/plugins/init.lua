@@ -317,4 +317,8 @@ return {
       require "configs.tools.mini"
     end,
   },
+  {
+    "alexpasmantier/krust.nvim",
+    ft = "rust",
+  },
 }
