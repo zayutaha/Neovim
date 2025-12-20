@@ -17,7 +17,10 @@ return {
     dependencies = {
       "hrsh7th/nvim-cmp",
     },
-    opts = {},
+  },
+  {
+    "alexpasmantier/krust.nvim",
+    ft = "rust",
   },
 }
 

@@ -38,7 +38,6 @@ return {
         "typescript-language-server",
         "tailwind-language-server",
         "eslint-lsp",
-        "rust-analyzer",
         "gopls",
       },
     },
@@ -289,11 +288,7 @@ return {
       require "configs.tools.mini"
     end,
   },
-  {
-    "alexpasmantier/krust.nvim",
-    ft = "rust",
-  },
-  {
+    {
     "esmuellert/vscode-diff.nvim",
     dependencies = { "MunifTanjim/nui.nvim" },
     cmd = "CodeDiff",
