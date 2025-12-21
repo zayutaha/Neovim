@@ -109,13 +109,10 @@ return {
     },
   },
 
-  -- TODO: should only load if in a git repo
   {
     "ruifm/gitlinker.nvim",
-    lazy = false,
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-    },
+    keys = { "<leader>gy" },
+    dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       require("gitlinker").setup()
     end,
