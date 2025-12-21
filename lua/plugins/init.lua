@@ -103,12 +103,4 @@ return {
       },
     },
   },
-  {
-    "nvim-mini/mini.nvim",
-    event = "VeryLazy",
-    version = "*",
-    config = function()
-      require "configs.tools.mini"
-    end,
-  },
 }
