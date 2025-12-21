@@ -1,10 +1,6 @@
-local cmp = require "cmp"
-
 return {
-  { import = "configs.core.plugins" },
-  { import = "configs.core.tools" },
+  { import = "configs.core" },
   { import = "configs.languages.rust.plugins" },
-  -- { import = "configs.core.media" },
   {
     "nvim-treesitter/nvim-treesitter",
     opts = {
