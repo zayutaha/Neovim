@@ -1,4 +1,5 @@
 require "nvchad.mappings"
+require "configs.languages.rust.mappings"
 
 -- add yours here
 
@@ -34,10 +35,6 @@ map("n", "<leader>gsy", ":GoTagAdd yaml<CR>", { noremap = true, silent = true, d
 -- all the go remaps start with gs
 map("n", "<leader>gse", ":GoIfErr <CR> ", { noremap = true, silent = true, desc = "If err return nil" })
 map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, desc = "Go Mod Tidy" })
-
--- rust
-map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = true, desc = "Restart Rust analyzer" })
-map("n", "<leader>rt", ":RustLsp testables<CR> ", { noremap = true, silent = true, desc = "Rust testables" })
 
 -- Snacks nvim
 ---@diagnostic disable: undefined-global
@@ -189,9 +186,3 @@ end, { silent = true, desc = "Add python import and move cursor" })
 map("n", "<leader>tr", function()
   require("python_import.api").add_rich_traceback()
 end, { silent = true, desc = "Add rich traceback" })
-
--- Krust
-map("n", "<leader>k", function()
-  require("krust").render()
-end, { desc = "Krust Render" })
---
