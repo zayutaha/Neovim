@@ -1,9 +1,9 @@
 local cmp = require "cmp"
 
 return {
-  { import = "configs.languages.rust.plugins" },
   { import = "configs.core.plugins" },
   { import = "configs.core.tools" },
+  { import = "configs.languages.rust.plugins" },
   -- { import = "configs.core.media" },
   {
     "nvim-treesitter/nvim-treesitter",
@@ -26,20 +26,6 @@ return {
     lazy = false,
     config = function()
       require("tiny-inline-diagnostic").setup()
-    end,
-  },
-  {
-    "hrsh7th/nvim-cmp",
-    event = "InsertEnter",
-    opts = function()
-      local M = require "nvchad.configs.cmp"
-      M.completion.completeopt = "menu,menuone,noselect"
-      M.mapping["<CR>"] = cmp.mapping.confirm {
-        behavior = cmp.ConfirmBehavior.Insert,
-        select = false,
-      }
-      table.insert(M.sources, { name = "crates" })
-      return M
     end,
   },
   {
@@ -124,11 +110,5 @@ return {
     config = function()
       require "configs.tools.mini"
     end,
-  },
-  {
-    "m4xshen/hardtime.nvim",
-    lazy = false,
-    dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
-    opts = {},
   },
 }

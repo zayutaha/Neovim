@@ -33,4 +33,25 @@ return {
       },
     },
   },
+  {
+    "hrsh7th/nvim-cmp",
+    event = "InsertEnter",
+    opts = function()
+      local cmp = require "cmp"
+      local M = require "nvchad.configs.cmp"
+      M.completion.completeopt = "menu,menuone,noselect"
+      M.mapping["<CR>"] = cmp.mapping.confirm {
+        behavior = cmp.ConfirmBehavior.Insert,
+        select = false,
+      }
+      table.insert(M.sources, { name = "crates" })
+      return M
+    end,
+  },
+  {
+    "m4xshen/hardtime.nvim",
+    lazy = false,
+    dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
+    opts = {},
+  },
 }
