@@ -2,12 +2,7 @@ local cmp = require "cmp"
 
 return {
   {import  = "configs.languages.rust.plugins"},
-  {
-    "stevearc/conform.nvim",
-    event = "BufWritePre",
-    opts = require "configs.conform",
-  },
-
+  {import  = "configs.core.plugins"},
   {
     "neovim/nvim-lspconfig",
     config = function()
