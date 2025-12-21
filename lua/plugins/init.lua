@@ -1,7 +1,7 @@
 local cmp = require "cmp"
 
 return {
-  {import  = "plugins.rust"},
+  {import  = "configs.languages.rust.plugins"},
   {
     "stevearc/conform.nvim",
     event = "BufWritePre",
@@ -62,20 +62,6 @@ return {
       table.insert(M.sources, { name = "crates" })
       return M
     end,
-  },
-  -- go
-  {
-    "olexsmir/gopher.nvim",
-    ft = "go",
-    config = function(_, opts)
-      require("gopher").setup(opts)
-    end,
-    build = function()
-      vim.cmd [[silent! GoInstallDeps]]
-    end,
-  },
-  commands = {
-    gomodifytags = "gomodifytags",
   },
   {
     "folke/snacks.nvim",
