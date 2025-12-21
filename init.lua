@@ -41,3 +41,5 @@ end)
 vim.defer_fn(function()
   vim.diagnostic.config { virtual_text = false }
 end, 100)
+
+require "configs.lsp"
