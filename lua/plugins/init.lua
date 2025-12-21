@@ -4,12 +4,6 @@ return {
   {import  = "configs.languages.rust.plugins"},
   {import  = "configs.core.plugins"},
   {
-    "neovim/nvim-lspconfig",
-    config = function()
-      require "configs.lspconfig"
-    end,
-  },
-  {
     "nvim-treesitter/nvim-treesitter",
     opts = {
       ensure_installed = {
@@ -34,6 +28,9 @@ return {
         "tailwind-language-server",
         "eslint-lsp",
         "gopls",
+        "prettier",
+        "prettierd",
+        "stylua",
       },
     },
   },
