@@ -3,7 +3,7 @@ local cmp = require "cmp"
 return {
   { import = "configs.languages.rust.plugins" },
   { import = "configs.core.plugins" },
-  { import = "configs.core.ui" },
+  { import = "configs.core.tools" },
   -- { import = "configs.core.media" },
   {
     "nvim-treesitter/nvim-treesitter",
@@ -61,16 +61,6 @@ return {
         end,
       })
     end,
-  },
-
-  {
-    "ruifm/gitlinker.nvim",
-    event = "BufReadPost",
-    cond = function()
-      return vim.fn.isdirectory(vim.fn.getcwd() .. "/.git") == 1
-    end,
-    dependencies = { "nvim-lua/plenary.nvim" },
-    opts = {},
   },
   {
     "zbirenbaum/copilot.lua",
@@ -134,11 +124,6 @@ return {
     config = function()
       require "configs.tools.mini"
     end,
-  },
-  {
-    "esmuellert/vscode-diff.nvim",
-    dependencies = { "MunifTanjim/nui.nvim" },
-    cmd = "CodeDiff",
   },
   {
     "m4xshen/hardtime.nvim",
