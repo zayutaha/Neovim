@@ -1,8 +1,8 @@
 local cmp = require "cmp"
 
 return {
-  {import  = "configs.languages.rust.plugins"},
-  {import  = "configs.core.plugins"},
+  { import = "configs.languages.rust.plugins" },
+  { import = "configs.core.plugins" },
   {
     "nvim-treesitter/nvim-treesitter",
     opts = {
@@ -15,22 +15,6 @@ return {
         "rust",
         "typescript",
         "go",
-      },
-    },
-  },
-  {
-    "williamboman/mason.nvim",
-    opts = {
-      ensure_installed = {
-        "pyright",
-        "mypy",
-        "typescript-language-server",
-        "tailwind-language-server",
-        "eslint-lsp",
-        "gopls",
-        "prettier",
-        "prettierd",
-        "stylua",
       },
     },
   },
@@ -125,16 +109,6 @@ return {
     },
   },
 
-  {
-    "nvimtools/none-ls.nvim",
-    ft = { "python" },
-    dependencies = {
-      "nvimtools/none-ls-extras.nvim",
-    },
-    config = function()
-      require "configs.tools.none-ls"
-    end,
-  },
   -- TODO: should only load if in a git repo
   {
     "ruifm/gitlinker.nvim",
@@ -266,7 +240,7 @@ return {
       require "configs.tools.mini"
     end,
   },
-    {
+  {
     "esmuellert/vscode-diff.nvim",
     dependencies = { "MunifTanjim/nui.nvim" },
     cmd = "CodeDiff",
