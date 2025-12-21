@@ -1,6 +1,6 @@
-require "configs.core.media"
 require "configs.core.tools"
 require "configs.core.ui"
+require "configs.core.ai"
 
 return {
   {
