@@ -16,8 +16,9 @@ local function get_python_path()
   return "python3"
 end
 
-vim.lsp.config("pyright", {
-  root_dir = vim.loop.cwd,
+vim.lsp.config["pyright"] = {
+  cmd = { "pyright-langserver", "--stdio" },
+  root_dir = vim.fs.root(0, { "pyproject.toml", "setup.py", ".git" }) or vim.loop.cwd(),
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,
@@ -32,4 +33,4 @@ vim.lsp.config("pyright", {
       },
     },
   },
-})
+}

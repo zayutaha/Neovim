@@ -1,18 +1,8 @@
-require "configs.core.tools"
-require "configs.core.ui"
-require "configs.core.ai"
-
 return {
-  {
-    "nvimtools/none-ls.nvim",
-    ft = { "python" },
-    dependencies = {
-      "nvimtools/none-ls-extras.nvim",
-    },
-    config = function()
-      require "configs.tools.none-ls"
-    end,
-  },
+  { import = "configs.core.tools" },
+  { import = "configs.core.ui" },
+  { import = "configs.core.ai" },
+
   {
     "stevearc/conform.nvim",
     lazy = false,
@@ -58,3 +48,4 @@ return {
     },
   },
 }
+

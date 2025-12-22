@@ -1,11 +1,5 @@
 return {
   {
-    "kiyoon/python-import.nvim",
-    build = "uv tool install . --force --reinstall",
-    ft = "python",
-    opts = require "configs.languages.python.opts",
-  },
-  {
     "ruifm/gitlinker.nvim",
     event = "BufReadPost",
     cond = function()
