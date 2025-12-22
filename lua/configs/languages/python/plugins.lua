@@ -3,7 +3,7 @@ return {
     "kiyoon/python-import.nvim",
     build = "uv tool install . --force --reinstall",
     ft = "python",
-    opts = require "configs.languages.python.opts",
+    opts = require "configs.languages.python.import_opts",
   },
   {
     "nvimtools/none-ls.nvim",
