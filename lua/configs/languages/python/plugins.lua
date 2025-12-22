@@ -12,7 +12,7 @@ return {
       "nvimtools/none-ls-extras.nvim",
     },
     config = function()
-      require "configs.tools.none-ls"
+      require "configs.languages.python.none_ls_opts"
     end,
   },
 }
