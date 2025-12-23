@@ -1,5 +1,4 @@
 return {
-  { import = "configs.editor.tools" },
   { import = "configs.editor.ui" },
   { import = "configs.editor.ai" },
 
