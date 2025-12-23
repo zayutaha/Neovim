@@ -1,7 +1,7 @@
 return {
-  { import = "configs.core.tools" },
-  { import = "configs.core.ui" },
-  { import = "configs.core.ai" },
+  { import = "configs.editor.tools" },
+  { import = "configs.editor.ui" },
+  { import = "configs.editor.ai" },
 
   {
     "stevearc/conform.nvim",
@@ -48,4 +48,3 @@ return {
     },
   },
 }
-

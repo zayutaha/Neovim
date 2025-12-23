@@ -1,5 +1,4 @@
 return {
-  { import = "configs.core" },
+  { import = "configs.editor" },
   { import = "configs.languages" },
 }
-
