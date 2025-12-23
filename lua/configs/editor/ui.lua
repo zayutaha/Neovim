@@ -28,6 +28,15 @@ return {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
+    opts = {
+      -- Add any snacks options here if needed, e.g.,
+      -- bigfile = { enabled = true },
+      -- dashboard = { enabled = true },
+      -- notifier = { enabled = true },
+      -- quickfile = { enabled = true },
+      -- statuscolumn = { enabled = true },
+      -- words = { enabled = true },
+    },
     init = function()
       vim.api.nvim_create_autocmd("User", {
         pattern = "VeryLazy",
