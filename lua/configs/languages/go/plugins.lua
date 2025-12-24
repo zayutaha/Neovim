@@ -1,4 +1,5 @@
 return {
+  {
     "olexsmir/gopher.nvim",
     ft = "go",
     config = function(_, opts)
@@ -8,6 +9,4 @@ return {
       vim.cmd [[silent! GoInstallDeps]]
     end,
   },
-  commands = {
-    gomodifytags = "gomodifytags",
 }

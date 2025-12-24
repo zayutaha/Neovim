@@ -27,6 +27,13 @@ return {
   },
 
   {
+    "williamboman/mason-lspconfig.nvim",
+    -- Disable automatic setup of lspconfig via mason-lspconfig
+    -- This prevents double setup of rust_analyzer and conflicts with native LSP
+    config = function() end,
+  },
+
+  {
     "m4xshen/hardtime.nvim",
     lazy = false,
     dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
