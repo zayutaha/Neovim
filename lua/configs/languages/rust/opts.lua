@@ -1,7 +1,7 @@
 local on_attach = require("nvchad.configs.lspconfig").on_attach
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
-local rustc_sysroot = vim.fn.system("rustc --print sysroot"):gsub("\n", "")
+capabilities.offsetEncoding = { "utf-16" }
 
 local options = {
   server = {
@@ -12,8 +12,11 @@ local options = {
     },
     settings = {
       ["rust-analyzer"] = {
+        check = {
+          enable = true,
+          command = "check",
+        },
         checkOnSave = true,
-        check = { enable = true, command = "check" },
         rustcSource = "discover",
         cargo = {
           extraEnv = { RUSTC_BOOTSTRAP = "1" },
