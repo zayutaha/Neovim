@@ -27,11 +27,21 @@ return {
   },
 
   {
-    "m4xshen/hardtime.nvim",
-    lazy = false,
-    dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
-    opts = {},
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = { "williamboman/mason.nvim", "neovim/nvim-lspconfig" },
+    opts = {
+      automatic_enable = {
+        exclude = { "rust_analyzer" },
+      },
+    },
   },
+
+  -- {
+  --   "m4xshen/hardtime.nvim",
+  --   lazy = false,
+  --   dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
+  --   opts = {},
+  -- },
   {
     "nvim-treesitter/nvim-treesitter",
     opts = {
@@ -40,7 +50,6 @@ return {
         "lua",
         "vimdoc",
         "html",
-        "css",
         "rust",
         "typescript",
         "go",

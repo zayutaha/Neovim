@@ -11,4 +11,4 @@ map("n", "<leader>k", function()
   require("krust").render()
 end, { desc = "Krust Render" })
 
-map("n", "<leader>gx", "<cmd>RustLsp openDocs<cr>", { desc = "Rust: Open docs in browser" })
+map("n", "<leader>gx", "<cmd>RustLsp openDocs<cr>", { desc = "Open docs in browser" })

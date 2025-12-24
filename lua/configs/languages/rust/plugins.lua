@@ -1,12 +1,12 @@
 return {
   {
     "mrcjkb/rustaceanvim",
-    version = "^4",
+    version = "^6",
     ft = { "rust" },
     dependencies = {
       "neovim/nvim-lspconfig",
     },
-    config = function()
+    init = function()
       require "configs.languages.rust.opts"
     end,
   },
@@ -23,4 +23,3 @@ return {
     ft = "rust",
   },
 }
-

@@ -99,5 +99,10 @@ map({ "n", "t" }, "[[", function()
   Snacks.words.jump(-vim.v.count1)
 end, { desc = "Prev Reference" })
 
-return {}
+map("n", "<c-h>", "<cmd>TmuxNavigateLeft<cr>", { desc = "Tmux Navigate Left" })
+map("n", "<c-j>", "<cmd>TmuxNavigateDown<cr>", { desc = "Tmux Navigate Down" })
+map("n", "<c-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Tmux Navigate Up" })
+map("n", "<c-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Tmux Navigate Right" })
+map("n", "<c-\\>", "<cmd>TmuxNavigatePrevious<cr>", { desc = "Tmux Navigate Previous" })
 
+return {}
