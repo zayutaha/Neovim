@@ -12,6 +12,10 @@ vim.lsp.config["rust-analyzer"] = {
         },
       },
 
+      rustc = {
+        source = "discover",
+      },
+
       check = {
         command = "check",
       },
