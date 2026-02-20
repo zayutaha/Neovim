@@ -1,6 +1,3 @@
-local lspconfig = require "lspconfig"
-local nvlsp = require "nvchad.configs.lspconfig"
-
 local function get_python_path()
   local venv = vim.env.VIRTUAL_ENV
   if venv then
@@ -18,10 +15,7 @@ end
 
 vim.lsp.config["pyright"] = {
   cmd = { "pyright-langserver", "--stdio" },
-  root_dir = vim.fs.root(0, { "pyproject.toml", "setup.py", ".git" }) or vim.loop.cwd(),
-  on_attach = nvlsp.on_attach,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
+  root_markers = { "pyproject.toml", "setup.py", ".git" },
   settings = {
     python = {
       pythonPath = get_python_path(),

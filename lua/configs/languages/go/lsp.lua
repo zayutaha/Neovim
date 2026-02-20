@@ -1,13 +1,7 @@
-local util = require "lspconfig.util"
-
-local nvlsp = require "nvchad.configs.lspconfig"
-
 vim.lsp.config["gopls"] = {
-  on_attach = nvlsp.on_attach,
-  capabilities = nvlsp.capabilities,
   cmd = { "gopls" },
   filetypes = { "go", "gomod", "gowork", "gotmpl" },
-  root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+  root_markers = { "go.work", "go.mod", ".git" },
   settings = {
     gopls = {
       completeUnimported = true,
