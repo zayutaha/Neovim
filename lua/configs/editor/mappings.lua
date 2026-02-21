@@ -117,4 +117,9 @@ map("n", "<c-k>", "<cmd>TmuxNavigateUp<cr>", { desc = "Tmux Navigate Up" })
 map("n", "<c-l>", "<cmd>TmuxNavigateRight<cr>", { desc = "Tmux Navigate Right" })
 map("n", "<c-\\>", "<cmd>TmuxNavigatePrevious<cr>", { desc = "Tmux Navigate Previous" })
 
+map("n", "gx", function()
+  local url = vim.fn.expand "<cfile>"
+  vim.ui.open(url)
+end, { desc = "Open URL under cursor" })
+
 return {}

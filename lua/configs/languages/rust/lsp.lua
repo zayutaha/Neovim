@@ -3,6 +3,12 @@ vim.lsp.config["rust-analyzer"] = {
   filetypes = { "rust" },
   root_markers = { "Cargo.toml", "rust-project.json", ".git" },
 
+  capabilities = {
+    experimental = {
+      openDocs = true,
+    },
+  },
+
   settings = {
     ["rust-analyzer"] = {
       cargo = {
