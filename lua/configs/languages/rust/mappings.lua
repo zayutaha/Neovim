@@ -1,9 +1,9 @@
 local map = vim.keymap.set
 
-map("n", "<leader>rs", "<cmd>LspRestart rust-analyzer<cr>", { desc = "Restart Rust analyzer" })
+map("n", "<leader>rs", "<cmd>LspRestart rust_analyzer<cr>", { desc = "Restart Rust analyzer" })
 
 map("n", "<leader>gx", function()
-  local client = vim.lsp.get_clients({ bufnr = 0, name = "rust-analyzer" })[1]
+  local client = vim.lsp.get_clients({ bufnr = 0, name = "rust_analyzer" })[1]
   if not client then
     vim.notify("rust-analyzer not attached", vim.log.levels.WARN)
     return

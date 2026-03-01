@@ -13,5 +13,5 @@ vim.lsp.enable {
   "tailwindcss",
   "gopls",
   "pyright",
-  "rust-analyzer",
+  "rust_analyzer",
 }

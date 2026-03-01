@@ -1,8 +1,4 @@
-vim.lsp.config["rust-analyzer"] = {
-  cmd = { "rust-analyzer" },
-  filetypes = { "rust" },
-  root_markers = { "Cargo.toml", "rust-project.json", ".git" },
-
+vim.lsp.config["rust_analyzer"] = {
   capabilities = {
     experimental = {
       openDocs = true,
