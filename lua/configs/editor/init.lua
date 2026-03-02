@@ -3,6 +3,34 @@ return {
   { import = "configs.editor.ai" },
 
   {
+    "nvim-telescope/telescope.nvim",
+    opts = {
+      defaults = {
+        mappings = {
+          i = {
+            ["<CR>"] = function(prompt_bufnr)
+              local actions = require "telescope.actions"
+              local state = require "telescope.actions.state"
+              local picker = state.get_current_picker(prompt_bufnr)
+              local selections = picker:get_multi_selection()
+              if #selections > 1 then
+                actions.close(prompt_bufnr)
+                for _, entry in ipairs(selections) do
+                  if entry.path or entry.filename then
+                    vim.cmd("edit " .. (entry.path or entry.filename))
+                  end
+                end
+              else
+                actions.select_default(prompt_bufnr)
+              end
+            end,
+          },
+        },
+      },
+    },
+  },
+
+  {
     "stevearc/conform.nvim",
     lazy = false,
     event = "BufWritePre",
