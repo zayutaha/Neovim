@@ -1,0 +1,178 @@
+" NvChad-ish IdeaVim config.
+" Goal: keep Neovim muscle memory, use IntelliJ actions where plugin parity impossible.
+"
+" Optional JetBrains plugins for fuller parity:
+" - AceJump + IdeaVim-EasyMotion
+" - Which-Key
+
+let mapleader = " "
+let maplocalleader = " "
+
+" Core feel
+set number
+set relativenumber
+set cursorline
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+set visualbell
+set timeout
+set timeoutlen=400
+set clipboard=unnamedplus,ideaput
+set whichwrap+=<,>,[,],h,l
+set ideajoin
+set ideamarks
+set idearefactormode=keep
+set ideawrite=all
+
+" Vim plugin parity inside IdeaVim
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+Plug 'vim-scripts/argtextobj.vim'
+Plug 'kana/vim-textobj-entire'
+Plug 'machakann/vim-highlightedyank'
+
+set surround
+set commentary
+set argtextobj
+set textobj-entire
+set highlightedyank
+let g:argtextobj_pairs = "(:),{:},<:>"
+let g:highlightedyank_highlight_duration = "250"
+
+" Optional: requires AceJump + IdeaVim-EasyMotion JetBrains plugins
+" Plug 'easymotion/vim-easymotion'
+" set easymotion
+
+" Optional: requires Which-Key JetBrains plugin
+" set which-key
+
+" Insert mode movement
+inoremap <C-b> <Home>
+inoremap <C-e> <End>
+inoremap <C-h> <Left>
+inoremap <C-l> <Right>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+imap <M-CR> <Esc><Action>(ShowIntentionActions)
+
+" Window movement
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nmap <C-o> :action Back<CR>
+nmap <C-i> :action Forward<CR>
+nmap <C-w>d <Action>(ShowErrorDescription)
+nmap <leader>wd <Action>(ShowErrorDescription)
+
+" Basic muscle memory
+nnoremap <Esc> :noh<CR>
+nnoremap <C-s> :w<CR>
+nnoremap <C-c> :%y+<CR>
+nnoremap <leader>sv :source ~/.ideavimrc<CR>
+nnoremap <leader>p "0p
+nnoremap <leader>P "0P
+xnoremap <leader>p "0p
+xnoremap <leader>P "0P
+
+" Numbers / comments
+nnoremap <leader>n :set invnumber<CR>
+nnoremap <leader>rn :set invrelativenumber<CR>
+nmap <leader>/ gcc
+xmap <leader>/ gc
+
+" Tabs / buffers
+nmap <leader>, <Action>(Switcher)
+nmap <leader>fb <Action>(RecentFiles)
+nmap <Tab> <Action>(NextTab)
+nmap <S-Tab> <Action>(PreviousTab)
+nmap <leader>bn <Action>(NextTab)
+nmap <leader>bp <Action>(PreviousTab)
+nmap <leader>x :action CloseEditor<CR>
+nmap <leader>q :action CloseEditor<CR>
+nmap <leader>bc :action CloseEditor<CR>
+nmap <leader>bd :action CloseEditor<CR>
+nmap <leader>bo <Action>(CloseAllEditorsButActive)
+nmap <leader>ba <Action>(CloseAllEditors)
+nmap <leader>bu <Action>(ReopenClosedTab)
+
+" Project / search
+nmap <C-n> <Action>(SelectInProjectView)
+nmap <leader>e :action ActivateProjectToolWindow<CR>:action JumpToLastWindow<CR>
+nmap <leader>E :action HideActiveWindow<CR>
+nmap <leader>ff :action GotoFile<CR>
+nmap <leader>fa <Action>(SearchEverywhere)
+nmap <leader>fw :action FindInPath<CR>
+nmap <leader>fz <Action>(Find)
+nmap <leader>fo <Action>(RecentChangedFiles)
+nmap <leader>ma <Action>(ShowBookmarks)
+nmap <leader>sj <Action>(RecentLocations)
+nmap <leader>sk <Action>(GotoAction)
+nmap <leader>sp <Action>(GotoAction)
+nmap <leader>ss <Action>(GotoSymbol)
+nmap <leader>sR <Action>(SearchEverywhere)
+nmap gx <Action>(OpenInBrowser)
+
+" Code nav / docs / refactor
+nmap gd <Action>(GotoDeclaration)
+nmap gD <Action>(GotoDeclarationOnly)
+nmap gr <Action>(FindUsages)
+nmap gI <Action>(GotoImplementation)
+nmap gy <Action>(GotoTypeDeclaration)
+nmap gh <Action>(ShowHoverInfo)
+nmap K <Action>(QuickJavaDoc)
+nmap <leader>ca :action ShowIntentionActions<CR>
+nmap <leader>fm :action ReformatCode<CR>
+nmap <leader>cr <Action>(RenameElement)
+nmap <leader>ra <Action>(RenameElement)
+nmap <leader>rn <Action>(RenameElement)
+nmap <leader>cR <Action>(RenameElement)
+nmap <leader>ca <Action>(ShowIntentionActions)
+nmap <leader>ci <Action>(ShowIntentionActions)
+nmap <leader>rr <Action>(FindUsages)
+nmap <leader>ri <Action>(GotoImplementation)
+nmap <leader>rd <Action>(GotoDeclaration)
+nmap <leader>rf :action ReformatCode<CR>
+xmap <leader>fm :action ReformatCode<CR>
+
+" Diagnostics
+nmap ]d <Action>(GotoNextError)
+nmap [d <Action>(GotoPreviousError)
+nmap <leader>ds <Action>(ShowErrorDescription)
+nmap <leader>sd <Action>(ShowErrorDescription)
+nmap <leader>sD <Action>(ShowErrorDescription)
+
+" Git / VCS
+nmap ]h <Action>(VcsShowNextChangeMarker)
+nmap [h <Action>(VcsShowPrevChangeMarker)
+nmap <leader>gb <Action>(Git.Branches)
+nmap <leader>gl <Action>(Vcs.Show.Log)
+nmap <leader>gL <Action>(Vcs.ShowHistoryForBlock)
+xmap <leader>gL <Action>(Vcs.ShowHistoryForBlock)
+nmap <leader>gs <Action>(Vcs.Show.Local.Changes)
+nmap <leader>gS <Action>(Git.Show.Stash)
+nmap <leader>gd <Action>(Vcs.ShowDiffChangedLines)
+nmap <leader>gf <Action>(Vcs.ShowTabbedFileHistory)
+nmap <leader>gg <Action>(Vcs.QuickListPopupAction)
+nmap <leader>un <Action>(HideAllWindows)
+
+" Debug
+nmap <leader>db <Action>(ToggleLineBreakpoint)
+nmap <leader>dus <Action>(ActivateDebugToolWindow)
+nmap <leader>dgt <Action>(ChooseDebugConfiguration)
+nmap <leader>dgl <Action>(Rerun)
+nmap <leader>dr <Action>(Resume)
+nmap <leader>do <Action>(StepOver)
+nmap <leader>di <Action>(StepInto)
+nmap <leader>dO <Action>(StepOut)
+
+" Android / Gradle closest equivalents
+
+" Uncomment while hunting extra IDs:
+"set trackactionids
+
+
+nnoremap <leader>a :action aiplugin.gemini.chat.ask<CR>
+vnoremap <leader>a :action aiplugin.gemini.chat.explainthis<CR>
