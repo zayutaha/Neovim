@@ -122,4 +122,6 @@ map("n", "gx", function()
   vim.ui.open(url)
 end, { desc = "Open URL under cursor" })
 
+vim.keymap.del("n", "<leader>b")
+
 return {}

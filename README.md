@@ -20,8 +20,7 @@ This is a personal Neovim configuration based on [NvChad v2.5](https://nvchad.co
 ## ✨ Key Features
 
 ### 🧠 AI Integration
-- **[Copilot](https://github.com/zbirenbaum/copilot.lua):** GitHub Copilot integration for code suggestions.
-- **[Avante.nvim](https://github.com/yetone/avante.nvim):** An AI-powered coding assistant configured to use Copilot as the provider (Model: `gpt-4o-2024-05-13`).
+- **[opencode.nvim](https://github.com/nickjvandyke/opencode.nvim):** Neovim integration for [OpenCode](https://opencode.ai), an open source AI coding agent. Keymaps: `<C-a>` ask, `<C-x>` select action, `<C-.>` toggle, `go` operator.
 
 ### 🛠️ Development Tools
 - **LSP & Formatting:** Managed via [Mason](https://github.com/williamboman/mason.nvim) and [Conform](https://github.com/stevearc/conform.nvim).

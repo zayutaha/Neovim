@@ -1,75 +1,63 @@
-local avante_opts = {
-  provider = "copilot",
-  auto_suggestions_provider = "copilot",
-  providers = {
-    copilot = {
-      endpoint = "https://api.githubcopilot.com",
-      model = "gpt-4o-2024-05-13",
-      proxy = nil,
-      allow_insecure = false,
-      timeout = 30000,
-      extra_request_body = {
-        temperature = 0,
-        max_tokens = 4096,
-      },
-    },
-  },
-}
-
 return {
   {
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    build = ":Copilot auth",
-    opts = {
-      suggestion = { enabled = false },
-      panel = { enabled = false },
-    },
-  },
-  {
-    "yetone/avante.nvim",
-    build = function()
-      if vim.fn.has "win32" == 1 then
-        return "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false"
-      else
-        return "make"
-      end
-    end,
-    event = "VeryLazy",
-    version = false,
-    opts = avante_opts,
+    "nickjvandyke/opencode.nvim",
+    version = "*",
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "echasnovski/mini.pick",
-      "nvim-telescope/telescope.nvim",
-      "hrsh7th/nvim-cmp",
-      "ibhagwan/fzf-lua",
-      "stevearc/dressing.nvim",
-      "folke/snacks.nvim",
-      "nvim-tree/nvim-web-devicons",
-      "zbirenbaum/copilot.lua",
       {
-        "HakonHarnes/img-clip.nvim",
-        event = "VeryLazy",
+        "folke/snacks.nvim",
+        lazy = false,
         opts = {
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = {
-              insert_mode = true,
+          input = {},
+          picker = {
+            actions = {
+              opencode_send = function(...)
+                return require("opencode").snacks_picker_send(...)
+              end,
             },
-            use_absolute_path = true,
+            win = {
+              input = {
+                keys = {
+                  ["<a-a>"] = { "opencode_send", mode = { "n", "i" } },
+                },
+              },
+            },
           },
         },
       },
-      {
-        "MeanderingProgrammer/render-markdown.nvim",
-        opts = {
-          file_types = { "markdown", "Avante" },
-        },
-        ft = { "markdown", "Avante" },
-      },
     },
+    config = function()
+      vim.o.autoread = true
+
+      vim.keymap.set({ "n", "x" }, "<C-a>", function()
+        require("opencode").ask("@this: ", { submit = true })
+      end, { desc = "Ask opencode…" })
+
+      vim.keymap.set({ "n", "x" }, "<C-x>", function()
+        require("opencode").select()
+      end, { desc = "Execute opencode action…" })
+
+      vim.keymap.set({ "n", "t" }, "<leader>ot", function()
+        require("opencode").toggle()
+      end, { desc = "Toggle opencode" })
+
+      vim.keymap.set({ "n", "x" }, "go", function()
+        return require("opencode").operator "@this "
+      end, { desc = "Add range to opencode", expr = true })
+
+      vim.keymap.set("n", "goo", function()
+        return require("opencode").operator "@this " .. "_"
+      end, { desc = "Add line to opencode", expr = true })
+
+      vim.keymap.set("n", "<S-C-u>", function()
+        require("opencode").command "session.half.page.up"
+      end, { desc = "Scroll opencode up" })
+
+      vim.keymap.set("n", "<S-C-d>", function()
+        require("opencode").command "session.half.page.down"
+      end, { desc = "Scroll opencode down" })
+
+      vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
+      vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
+    end,
   },
 }
