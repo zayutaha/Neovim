@@ -6,6 +6,13 @@ require "configs.languages.kotlin.lsp"
 
 vim.diagnostic.config { virtual_text = false }
 
+-- Check if project is a Dioxus project
+local function is_dioxus_project()
+  local root = vim.fs.root(0, { "dioxus.toml" })
+  return root ~= nil
+end
+
+-- Configure tailwindcss for Dioxus projects
 vim.lsp.config("tailwindcss", {
   init_options = {
     userLanguages = { rust = "html" },
@@ -21,14 +28,20 @@ vim.lsp.config("tailwindcss", {
   filetypes = { "css", "html", "rust" },
 })
 
-vim.lsp.enable {
+local enable_servers = {
   "html",
   "cssls",
   "ts_ls",
   "eslint",
-  "tailwindcss",
   "gopls",
   "pyright",
   "rust_analyzer",
   "kotlin_language_server",
 }
+
+-- Only enable tailwindcss in Dioxus projects
+if is_dioxus_project() then
+  table.insert(enable_servers, "tailwindcss")
+end
+
+vim.lsp.enable(enable_servers)
