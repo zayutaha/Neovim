@@ -122,6 +122,8 @@ map("n", "gx", function()
   vim.ui.open(url)
 end, { desc = "Open URL under cursor" })
 
-vim.keymap.del("n", "<leader>b")
+map("n", "<leader>fm", function()
+  require("conform").format { async = true, lsp_fallback = true }
+end, { desc = "Format buffer" })
 
 return {}
