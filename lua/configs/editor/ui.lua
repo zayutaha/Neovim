@@ -17,8 +17,8 @@ return {
 
   {
     "rachartier/tiny-inline-diagnostic.nvim",
-    ft = { "rust", "typescript", "javascript" },
-    lazy = false,
+    event = "VeryLazy",
+    priority = 1000,
     config = function()
       require("tiny-inline-diagnostic").setup()
     end,

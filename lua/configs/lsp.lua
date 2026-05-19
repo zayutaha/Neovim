@@ -4,8 +4,6 @@ require "configs.languages.go.lsp"
 require "configs.languages.rust.lsp"
 require "configs.languages.kotlin.lsp"
 
-vim.diagnostic.config { virtual_text = false }
-
 -- Check if project is a Dioxus project
 local function is_dioxus_project()
   local root = vim.fs.root(0, { "dioxus.toml" })
