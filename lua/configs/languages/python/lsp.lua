@@ -21,7 +21,7 @@ vim.lsp.config["pyright"] = {
       pythonPath = get_python_path(),
       analysis = {
         autoImportCompletions = true,
-        typeCheckingMode = "basic",
+        typeCheckingMode = "strict",
         diagnosticMode = "workspace",
         useLibraryCodeForTypes = true,
       },

@@ -15,6 +15,18 @@ return {
       require "configs.languages.python.none_ls_opts"
     end,
   },
+  {
+    "nvim-neotest/neotest",
+    event = "VeryLazy",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-neotest/neotest-python",
+      "nvim-neotest/nvim-nio",
+    },
+    config = function()
+      require "configs.languages.python.neotest"
+    end,
+  },
   { "onsails/lspkind.nvim", lazy = true },
   {
     "UN-9BOT/nvim-lspimport",

@@ -43,6 +43,7 @@ return {
       ensure_installed = {
         "pyright",
         "mypy",
+        "ruff",
         "typescript-language-server",
         "tailwind-language-server",
         "eslint-lsp",
@@ -80,6 +81,7 @@ return {
         "rust",
         "typescript",
         "go",
+        "python",
       },
     },
   },

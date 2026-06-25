@@ -24,8 +24,14 @@ end
 null_ls.setup {
   sources = {
     null_ls.builtins.code_actions.refactoring,
+
+    null_ls.builtins.diagnostics.ruff,
+
     null_ls.builtins.diagnostics.mypy.with {
-      extra_args = { "--python-executable", get_python_path() },
+      extra_args = {
+        "--strict",
+        "--python-executable", get_python_path(),
+      },
     },
   },
   on_attach = function(client, bufnr)
