@@ -8,6 +8,24 @@ return {
   },
 
   {
+    "christoomey/vim-tmux-navigator",
+    cmd = {
+      "TmuxNavigateLeft",
+      "TmuxNavigateDown",
+      "TmuxNavigateUp",
+      "TmuxNavigateRight",
+      "TmuxNavigatePrevious",
+    },
+    keys = {
+      { "<c-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "window left" },
+      { "<c-j>", "<cmd>TmuxNavigateDown<cr>", desc = "window down" },
+      { "<c-k>", "<cmd>TmuxNavigateUp<cr>", desc = "window up" },
+      { "<c-l>", "<cmd>TmuxNavigateRight<cr>", desc = "window right" },
+      { "<c-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "window previous" },
+    },
+  },
+
+  {
     "neovim/nvim-lspconfig",
     config = function()
       require "configs.lspconfig"

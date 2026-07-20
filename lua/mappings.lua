@@ -76,3 +76,10 @@ map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = 
 
 map("n", "<leader>ca", ":lua vim.lsp.buf.code_action() <CR>", { noremap = true, silent = true, desc = "Code actions" })
 
+-- vim-tmux-navigator mappings
+map("n", "<C-h>", "<cmd>TmuxNavigateLeft<CR>", { desc = "window left" })
+map("n", "<C-j>", "<cmd>TmuxNavigateDown<CR>", { desc = "window down" })
+map("n", "<C-k>", "<cmd>TmuxNavigateUp<CR>", { desc = "window up" })
+map("n", "<C-l>", "<cmd>TmuxNavigateRight<CR>", { desc = "window right" })
+map("n", "<C-\\>", "<cmd>TmuxNavigatePrevious<CR>", { desc = "window previous" })
+
