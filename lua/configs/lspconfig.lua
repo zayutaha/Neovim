@@ -52,18 +52,21 @@ lspconfig.basedpyright.setup {
   on_attach = nvlsp.on_attach,
   on_init = nvlsp.on_init,
   capabilities = nvlsp.capabilities,
-  before_init = function(_, config)
-    local root = config.root_dir or vim.fn.getcwd()
-    local venv_python = root .. "/.venv/bin/python"
+  on_new_config = function(new_config, new_root_dir)
+    local venv_python = new_root_dir .. "/.venv/bin/python"
     if vim.fn.executable(venv_python) == 1 then
-      config.settings = config.settings or {}
-      config.settings.python = config.settings.python or {}
-      config.settings.python.pythonPath = venv_python
+      new_config.settings = vim.tbl_deep_extend("force", new_config.settings or {}, {
+        python = {
+          pythonPath = venv_python,
+        },
+      })
     end
   end,
   settings = {
     basedpyright = {
       analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
         autoImportCompletions = true,
         diagnosticMode = "openFilesOnly",
         typeCheckingMode = "standard",
