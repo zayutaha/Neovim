@@ -59,6 +59,8 @@ lspconfig.basedpyright.setup {
         python = {
           pythonPath = venv_python,
         },
+        venvPath = new_root_dir,
+        venv = ".venv",
       })
     end
   end,
@@ -68,8 +70,20 @@ lspconfig.basedpyright.setup {
         autoSearchPaths = true,
         useLibraryCodeForTypes = true,
         autoImportCompletions = true,
-        diagnosticMode = "openFilesOnly",
+        diagnosticMode = "workspace",
         typeCheckingMode = "standard",
+        packageIndexDepths = {
+          {
+            name = "",
+            depth = 2,
+            includeAllSymbols = true,
+          },
+          {
+            name = "transformers",
+            depth = 4,
+            includeAllSymbols = true,
+          },
+        },
       },
     },
   },
