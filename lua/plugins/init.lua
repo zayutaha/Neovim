@@ -774,15 +774,24 @@ return {
       backend = "vim",
       picker = "snacks",
       sort = function(a, b)
-        local priority = {
+        local client_priority = {
           basedpyright = 1,
           pyright = 1,
           ruff = 2,
         }
-        local a_pri = priority[a.client.name] or 99
-        local b_pri = priority[b.client.name] or 99
+        local a_pri = client_priority[a.client.name] or 99
+        local b_pri = client_priority[b.client.name] or 99
         if a_pri ~= b_pri then
           return a_pri < b_pri
+        end
+        local a_title = a.action.title or ""
+        local b_title = b.action.title or ""
+        local a_is_import = a_title:match("^from ") or a_title:match("^import ")
+        local b_is_import = b_title:match("^from ") or b_title:match("^import ")
+        if a_is_import and not b_is_import then
+          return true
+        elseif not a_is_import and b_is_import then
+          return false
         end
         return false
       end,
