@@ -773,6 +773,19 @@ return {
     opts = {
       backend = "vim",
       picker = "snacks",
+      sort = function(a, b)
+        local priority = {
+          basedpyright = 1,
+          pyright = 1,
+          ruff = 2,
+        }
+        local a_pri = priority[a.client.name] or 99
+        local b_pri = priority[b.client.name] or 99
+        if a_pri ~= b_pri then
+          return a_pri < b_pri
+        end
+        return false
+      end,
     },
   },
 }
