@@ -43,6 +43,7 @@ return {
         "rust",
         "typescript",
         "go",
+        "python",
       },
     },
   },
@@ -50,9 +51,9 @@ return {
     "williamboman/mason.nvim",
     opts = {
       ensure_installed = {
-        "pyright",
+        "basedpyright",
         "mypy",
-        "ruff-lsp",
+        "ruff",
         "typescript-language-server",
         "tailwind-language-server",
         "eslint-lsp",
@@ -761,6 +762,17 @@ return {
           theme = nil, -- nil | "light" | "dark" | custom theme string
         },
       },
+    },
+  },
+  {
+    "rachartier/tiny-code-action.nvim",
+    dependencies = {
+      "folke/snacks.nvim",
+    },
+    event = "LspAttach",
+    opts = {
+      backend = "vim",
+      picker = "snacks",
     },
   },
 }

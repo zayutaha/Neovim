@@ -74,7 +74,9 @@ map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, des
 -- rust
 map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = true, desc = "Restart Rust analyzer" })
 
-map("n", "<leader>ca", ":lua vim.lsp.buf.code_action() <CR>", { noremap = true, silent = true, desc = "Code actions" })
+map({ "n", "v" }, "<leader>ca", function()
+  require("tiny-code-action").code_action()
+end, { noremap = true, silent = true, desc = "Code actions (with preview)" })
 
 -- vim-tmux-navigator mappings
 map("n", "<C-h>", "<cmd>TmuxNavigateLeft<CR>", { desc = "window left" })
