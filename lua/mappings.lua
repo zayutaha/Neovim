@@ -73,6 +73,9 @@ map("n", "<leader>gst", ":GoMod tidy<CR> ", { noremap = true, silent = true, des
 
 -- rust
 map("n", "<leader>rs", ":RustAnalyzer restart<CR> ", { noremap = true, silent = true, desc = "Restart Rust analyzer" })
+map("n", "<leader>k", function()
+  require("krust").render()
+end, { noremap = true, silent = true, desc = "Render Rust diagnostics (krust)" })
 
 map({ "n", "v" }, "<leader>ca", function()
   require("tiny-code-action").code_action()

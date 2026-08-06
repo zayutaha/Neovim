@@ -127,6 +127,13 @@ return {
       vim.g.rustfmt_autosave = 1
     end,
   },
+  {
+    "alexpasmantier/krust.nvim",
+    ft = "rust",
+    config = function()
+      require("krust").setup({})
+    end,
+  },
   -- typescript
   {
     "windwp/nvim-ts-autotag",
@@ -158,9 +165,6 @@ return {
     build = function()
       vim.cmd [[silent! GoInstallDeps]]
     end,
-  },
-  commands = {
-    gomodifytags = "gomodifytags",
   },
   {
     "folke/snacks.nvim",
@@ -772,7 +776,7 @@ return {
     event = "LspAttach",
     opts = {
       backend = "vim",
-      picker = "snacks",
+      picker = "select",
       sort = function(a, b)
         local client_priority = {
           basedpyright = 1,
