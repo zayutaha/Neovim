@@ -166,6 +166,9 @@ return {
       vim.cmd [[silent! GoInstallDeps]]
     end,
   },
+  commands = {
+    gomodifytags = "gomodifytags",
+  },
   {
     "folke/snacks.nvim",
     priority = 1000,
@@ -776,7 +779,7 @@ return {
     event = "LspAttach",
     opts = {
       backend = "vim",
-      picker = "select",
+      picker = "snacks",
       sort = function(a, b)
         local client_priority = {
           basedpyright = 1,
