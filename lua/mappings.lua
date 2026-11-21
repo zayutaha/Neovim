@@ -4,6 +4,16 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
+map("n", "<leader>gd", function()
+  require("configs.git_diff").open(0)
+end, { desc = "Git Diff Hunks" })
+map("n", "]b", function()
+  require("configs.git_diff").navigate(1)
+end, { desc = "Next Git Diff Hunk" })
+map("n", "[b", function()
+  require("configs.git_diff").navigate(-1)
+end, { desc = "Previous Git Diff Hunk" })
+
 -- Trouble
 map(
   "n",
@@ -80,6 +90,20 @@ end, { noremap = true, silent = true, desc = "Render Rust diagnostics (krust)" }
 map({ "n", "v" }, "<leader>ca", function()
   require("tiny-code-action").code_action()
 end, { noremap = true, silent = true, desc = "Code actions (with preview)" })
+
+-- markdown
+map(
+  "n",
+  "<leader>um",
+  "<cmd>RenderMarkdown buf_toggle<CR>",
+  { noremap = true, silent = true, desc = "Toggle markdown rendering (buffer)" }
+)
+map(
+  "n",
+  "<leader>uM",
+  "<cmd>RenderMarkdown toggle<CR>",
+  { noremap = true, silent = true, desc = "Toggle markdown rendering (global)" }
+)
 
 -- vim-tmux-navigator mappings
 map("n", "<C-h>", "<cmd>TmuxNavigateLeft<CR>", { desc = "window left" })

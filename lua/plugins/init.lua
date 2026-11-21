@@ -44,6 +44,8 @@ return {
         "typescript",
         "go",
         "python",
+        "markdown",
+        "markdown_inline",
       },
     },
   },
@@ -72,6 +74,26 @@ return {
   {
     "tpope/vim-fugitive",
     lazy = false,
+  },
+  {
+    "sindrets/diffview.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-tree/nvim-web-devicons",
+    },
+    cmd = {
+      "DiffviewOpen",
+      "DiffviewFileHistory",
+      "DiffviewClose",
+      "DiffviewToggleFiles",
+      "DiffviewFocusFiles",
+      "DiffviewRefresh",
+    },
+    keys = {
+      { "<leader>gD", "<cmd>DiffviewOpen<cr>", desc = "Git Diff View" },
+      { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File Git History" },
+      { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "Git History" },
+    },
   },
   {
     "folke/trouble.nvim",
@@ -326,9 +348,26 @@ return {
       {
         "<leader>gd",
         function()
-          Snacks.picker.git_diff()
+          require("configs.git_diff").open(0)
         end,
         desc = "Git Diff (Hunks)",
+      },
+      {
+        "<leader>gB",
+        function()
+          Snacks.picker.git_log {
+            title = "Diff against commit",
+            confirm = function(picker, item)
+              picker:close()
+              if item and item.commit then
+                vim.g.git_diff_base_commit = item.commit
+                require("configs.git_diff").reset()
+                Snacks.notify.info("Git diff base set to " .. item.commit:sub(1, 7))
+              end
+            end,
+          }
+        end,
+        desc = "Git Diff vs ref",
       },
       {
         "<leader>gf",
@@ -787,6 +826,36 @@ return {
           theme = nil, -- nil | "light" | "dark" | custom theme string
         },
       },
+    },
+  },
+  -- markdown
+  {
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = { "markdown" },
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "nvim-tree/nvim-web-devicons",
+    },
+    opts = require "configs.render-markdown",
+  },
+  {
+    -- auto-continue bullet lists, numbered lists and task lists
+    "bullets-vim/bullets.vim",
+    ft = { "markdown", "text", "gitcommit" },
+    init = function()
+      vim.g.bullets_enabled_file_types = { "markdown", "text", "gitcommit", "scratch" }
+    end,
+  },
+  {
+    -- GitHub-styled browser preview; toggle with <leader>mp
+    "iamcco/markdown-preview.nvim",
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    ft = { "markdown" },
+    build = function()
+      vim.fn["mkdp#util#install"]()
+    end,
+    keys = {
+      { "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", ft = "markdown", desc = "Markdown Preview" },
     },
   },
   {
