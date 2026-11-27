@@ -138,6 +138,20 @@ local function set_walkthrough_highlights()
     style.ctermfg = 15
     vim.api.nvim_set_hl(notes_highlights, name, style)
   end
+
+  -- Key hints in the notes pane's winbar: keys in the accent colour, labels
+  -- in plain text, on the winbar's own background (focused or not).
+  local bar = vim.api.nvim_get_hl(0, { name = "WinBar", link = false })
+  local key = vim.api.nvim_get_hl(0, { name = "Function", link = false })
+  local text = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+  for _, ns in ipairs({ 0, notes_highlights }) do
+    vim.api.nvim_set_hl(ns, "ClaudeTourKey", { fg = key.fg or "#89b4fa", bg = bar.bg, bold = true })
+    vim.api.nvim_set_hl(ns, "ClaudeTourHint", { fg = text.fg or "#cdd6f4", bg = bar.bg })
+    vim.api.nvim_set_hl(ns, "ClaudeTourSep", { fg = key.fg or "#89b4fa", bg = bar.bg })
+  end
+  -- Only the notes pane: keep its winbar from dimming when unfocused.
+  vim.api.nvim_set_hl(notes_highlights, "WinBar", { fg = text.fg, bg = bar.bg })
+  vim.api.nvim_set_hl(notes_highlights, "WinBarNC", { fg = text.fg, bg = bar.bg })
 end
 
 local function show_walkthrough_notes()
@@ -161,7 +175,12 @@ local function show_walkthrough_notes()
     opts.signcolumn = "no"
     opts.wrap = true
     opts.linebreak = true
-    opts.winbar = " <leader>an Next · aN Prev · ae Chat"
+    local function hint(keys, label)
+      return "%#ClaudeTourKey#" .. keys .. " %#ClaudeTourHint#" .. label
+    end
+    opts.winbar = " " .. table.concat({
+      hint("<leader>an", "Next"), hint("aN", "Prev"), hint("ae", "Chat"),
+    }, "%#ClaudeTourSep# · ")
     vim.api.nvim_win_set_hl_ns(notes_window, notes_highlights)
     rendered_tour = nil
   end
@@ -334,9 +353,11 @@ local function center_code_range(window, buffer, first_line, last_line)
       local height = vim.api.nvim_win_get_height(window)
       local span = last_line - first_line + 1
       local top = span < height and first_line - math.floor((height - span) / 2) or first_line - 2
-      vim.api.nvim_win_set_cursor(window, { first_line, 0 })
+      local text = vim.api.nvim_buf_get_lines(buffer, first_line - 1, first_line, false)[1] or ""
+      local col = #(text:match("^%s*"))
+      vim.api.nvim_win_set_cursor(window, { first_line, col })
       vim.cmd("normal! zv")
-      vim.fn.winrestview({ topline = math.max(1, top), lnum = first_line, col = 0 })
+      vim.fn.winrestview({ topline = math.max(1, top), lnum = first_line, col = col })
     end)
   end
 
@@ -411,6 +432,23 @@ local function focus_walkthrough_notes()
   end
 end
 
+-- Put the cursor on the first line of the highlighted range (first
+-- non-blank column) in the walkthrough's source pane.
+local function focus_walkthrough_code()
+  if not shown_code_window or not vim.api.nvim_win_is_valid(shown_code_window) then
+    return
+  end
+  hide_tour_chat()
+  vim.api.nvim_set_current_win(shown_code_window)
+  vim.cmd.stopinsert()
+  local first = code_tour and code_tour.location and code_tour.location.first
+  if first then
+    local buffer = vim.api.nvim_win_get_buf(shown_code_window)
+    local line = vim.api.nvim_buf_get_lines(buffer, first - 1, first, false)[1] or ""
+    vim.api.nvim_win_set_cursor(shown_code_window, { first, #(line:match("^%s*")) })
+  end
+end
+
 local function show_tour_stop(tour, index)
   hide_tour_chat()
   local stop = tour.stops[index]
@@ -440,7 +478,7 @@ local function show_tour_stop(tour, index)
   watch_terminal_output(require("claudecode.terminal").get_active_terminal_bufnr())
   show_walkthrough_notes()
   if tour.reading and not walkthrough_generating(tour) then
-    focus_walkthrough_notes()
+    focus_walkthrough_code()
   end
 end
 
@@ -596,7 +634,7 @@ local function focus_after_output(tour, attempts)
     end
     tour.focus_pending = false
     tour.reading = true
-    focus_walkthrough_notes()
+    focus_walkthrough_code()
   end, 250)
 end
 
