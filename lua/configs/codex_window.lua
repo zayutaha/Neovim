@@ -164,7 +164,7 @@ function M.restore_after_approval()
 end
 
 function M.open(layout, args)
-  local target_layout = layout or vim.g.codex_last_layout or "sidebar"
+  local target_layout = layout or "sidebar"
   if not terminal or not terminal:buf_valid() then
     terminal = start(args)
   elseif terminal:win_valid() then
@@ -198,7 +198,6 @@ function M.hide()
 end
 
 function M.toggle(layout)
-  vim.g.codex_last_layout = layout
   if terminal and terminal:win_valid() then
     local window = terminal.win
     if not vim.api.nvim_win_get_config(window).hide and agent_layout.current(window) == layout then

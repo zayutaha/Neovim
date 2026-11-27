@@ -206,7 +206,7 @@ end
 
 function M.open(layout, args)
   local in_tour = M.in_code_tour()
-  local target_layout = in_tour and "popup" or layout or vim.g.claude_last_layout or "sidebar"
+  local target_layout = in_tour and "popup" or layout or "sidebar"
   local tab = vim.api.nvim_get_current_tabpage()
   local terminal = require("claudecode.terminal")
   local window = claude_window()
@@ -959,7 +959,6 @@ function M.toggle(layout)
   if M.in_code_tour() then
     layout = "popup"
   end
-  vim.g.claude_last_layout = layout
   local window = claude_window()
   if window and vim.api.nvim_win_get_tabpage(window) == vim.api.nvim_get_current_tabpage() then
     local config = vim.api.nvim_win_get_config(window)

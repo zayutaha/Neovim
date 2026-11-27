@@ -29,7 +29,6 @@ end
 
 function M.dock()
   local name = selected()
-  vim.g[name:lower() .. "_last_layout"] = "sidebar"
   provider(name).show_sidebar(true)
 end
 
