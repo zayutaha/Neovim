@@ -1261,12 +1261,15 @@ local function remember_popup()
   end
 end
 
+-- Edit/Write permission hook. Shows Claude beside the code but never takes
+-- the cursor: it belongs in the diff being approved. The hook can arrive
+-- after the diff (or the pinned review tab) is already open.
 function M.prepare_for_approval()
-  if next(open_diffs) then
+  if next(open_diffs) or review_tabs[vim.api.nvim_get_current_tabpage()] then
     return
   end
   remember_popup()
-  M.show_sidebar(true)
+  M.show_sidebar(false)
 end
 
 function M.restore_after_approval()
