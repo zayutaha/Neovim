@@ -1,30 +1,14 @@
--- load defaults i.e lua_lsp
+-- load defaults i.e lua_lsp (also applies NvChad's capabilities, on_init and
+-- LspAttach keymaps to every server through vim.lsp.config("*"))
 require("nvchad.configs.lspconfig").defaults()
 
 vim.diagnostic.config({ virtual_text = false })
 
-local lspconfig = require "lspconfig"
-
-local servers = { "html", "cssls", "ts_ls", "eslint"}
-local nvlsp = require "nvchad.configs.lspconfig"
-local util = require "lspconfig/util"
-
--- lsps with default config
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = nvlsp.on_attach,
-    on_init = nvlsp.on_init,
-    capabilities = nvlsp.capabilities,
-  }
-end
-
 -- Custom go setup
-lspconfig.gopls.setup {
-  on_attach = nvlsp.on_attach,
-  capabilities = nvlsp.capabilities,
+vim.lsp.config("gopls", {
   cmd = { "gopls" },
   filetypes = { "go", "gomod", "gowork", "gotmpl" },
-  root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+  root_markers = { "go.work", "go.mod", ".git" },
   settings = {
     gopls = {
       completeUnimported = true,
@@ -45,23 +29,19 @@ lspconfig.gopls.setup {
       gofumpt = true,
     },
   },
-}
+})
 
 -- Python setup (basedpyright + uv venv auto-detection)
-lspconfig.basedpyright.setup {
-  on_attach = nvlsp.on_attach,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
-  on_new_config = function(new_config, new_root_dir)
-    local venv_python = new_root_dir .. "/.venv/bin/python"
-    if vim.fn.executable(venv_python) == 1 then
-      new_config.settings = vim.tbl_deep_extend("force", new_config.settings or {}, {
-        python = {
-          pythonPath = venv_python,
-        },
-        venvPath = new_root_dir,
-        venv = ".venv",
-      })
+vim.lsp.config("basedpyright", {
+  before_init = function(_, config)
+    local root = config.root_dir
+    local venv_python = root and root .. "/.venv/bin/python"
+    if venv_python and vim.fn.executable(venv_python) == 1 then
+      -- Mutate in place: the client already holds a reference to this table.
+      local settings = config.settings
+      settings.python = vim.tbl_extend("force", settings.python or {}, { pythonPath = venv_python })
+      settings.venvPath = root
+      settings.venv = ".venv"
     end
   end,
   settings = {
@@ -87,12 +67,6 @@ lspconfig.basedpyright.setup {
       },
     },
   },
-}
+})
 
--- Ruff setup
-lspconfig.ruff.setup {
-  on_attach = nvlsp.on_attach,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
-}
-
+vim.lsp.enable({ "html", "cssls", "ts_ls", "eslint", "gopls", "basedpyright", "ruff" })
