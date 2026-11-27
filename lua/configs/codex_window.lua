@@ -241,8 +241,8 @@ function M.resize()
   end
 end
 
-function M.draft(text, submit)
-  M.open()
+function M.draft(text, submit, layout)
+  M.open(layout)
   if not (terminal and terminal:buf_valid()) then
     return
   end

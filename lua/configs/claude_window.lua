@@ -1307,11 +1307,11 @@ function M.toggle(layout)
   M.open(layout)
 end
 
-function M.send(command)
+function M.send(command, layout)
   vim.cmd(command)
   -- ClaudeCodeSend schedules the send after leaving Visual mode.
   vim.schedule(function()
-    M.open()
+    M.open(layout)
   end)
 end
 

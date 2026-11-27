@@ -117,9 +117,17 @@ function M.send_tree()
   end
 end
 
+-- In a :CodeDiff tab the diff needs the room, so selections go to the
+-- popup (Ctrl-F) instead of the sidebar.
+local function in_codediff()
+  local lifecycle = package.loaded["codediff.ui.lifecycle"]
+  return lifecycle ~= nil and lifecycle.get_session(vim.api.nvim_get_current_tabpage()) ~= nil
+end
+
 function M.send_selection()
+  local layout = in_codediff() and "popup" or nil
   if selected() == "Claude" then
-    provider().send("ClaudeCodeSend")
+    provider().send("ClaudeCodeSend", layout)
     return
   end
   local path = vim.api.nvim_buf_get_name(0)
@@ -141,7 +149,7 @@ function M.send_selection()
   label = string.format("%s (lines %d–%d)", label, first, last)
   vim.api.nvim_feedkeys(vim.keycode("<Esc>"), "in", false)
   vim.schedule(function()
-    provider("Codex").draft(table.concat({ label, fence, text, fence, "" }, "\n"))
+    provider("Codex").draft(table.concat({ label, fence, text, fence, "" }, "\n"), false, layout)
   end)
 end
 
