@@ -21,6 +21,25 @@ function M.popup_config()
   }
 end
 
+function M.sidebar_columns()
+  return math.max(1, math.floor(vim.o.columns * M.sidebar_width))
+end
+
+-- Re-fit an assistant window to the current editor size: popups get a new
+-- float config, side panes their proportional width.
+function M.refit(window)
+  if not (window and vim.api.nvim_win_is_valid(window)) then
+    return
+  end
+  if M.current(window) == "popup" then
+    if not vim.api.nvim_win_get_config(window).hide then
+      vim.api.nvim_win_set_config(window, M.popup_config())
+    end
+  else
+    vim.api.nvim_win_set_width(window, M.sidebar_columns())
+  end
+end
+
 function M.show(window, layout)
   if layout == "popup" then
     local tab = vim.api.nvim_win_get_tabpage(window)
@@ -51,7 +70,7 @@ function M.show(window, layout)
     vim.api.nvim_win_set_config(window, {
       split = "right",
       win = -1,
-      width = math.max(1, math.floor(vim.o.columns * M.sidebar_width)),
+      width = M.sidebar_columns(),
     })
   end
 end

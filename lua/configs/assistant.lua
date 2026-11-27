@@ -31,6 +31,10 @@ end
 -- (or move it there from the popup).
 function M.dock()
   require("lazy").load({ plugins = { "claudecode.nvim" } })
+  if selected() == "Claude" and provider().in_code_tour() then
+    vim.notify("The sidebar isn't available during a walkthrough. Use Ctrl-F to open Claude here.")
+    return
+  end
   provider().toggle("sidebar")
 end
 
@@ -129,7 +133,29 @@ function M.send_selection()
   end)
 end
 
+-- Snacks closes its terminal windows on ExitPre. When the assistant terminal
+-- is the current window, that close switches windows mid-quit and Neovim
+-- aborts the :qa! (only Claude/Codex closes). Drop that hook for assistant
+-- terminals; their jobs are still stopped on exit (VimLeavePre handlers).
+local function keep_quit_all_working(buffer)
+  vim.schedule(function()
+    for _, term in ipairs(Snacks.terminal.list()) do
+      if term.buf == buffer then
+        term.events = vim.tbl_filter(function(event)
+          return event.event ~= "ExitPre"
+        end, term.events or {})
+        if term.augroup then
+          for _, autocmd in ipairs(vim.api.nvim_get_autocmds({ group = term.augroup, event = "ExitPre" })) do
+            vim.api.nvim_del_autocmd(autocmd.id)
+          end
+        end
+      end
+    end
+  end)
+end
+
 function M.map_terminal_keys(buffer)
+  keep_quit_all_working(buffer)
   local opts = { buffer = buffer, silent = true }
   for _, keys in ipairs({ "<Esc>:", "<M-:>" }) do
     vim.keymap.set("t", keys, "<C-\\><C-n>:", {

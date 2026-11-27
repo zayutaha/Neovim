@@ -1119,9 +1119,18 @@ function M.setup()
   vim.api.nvim_create_autocmd("VimResized", {
     group = group,
     callback = function()
-      local window = claude_window()
-      if window and agent_layout.current(window) == "popup" then
-        agent_layout.show(window, "popup")
+      -- Every tab: the sidebar, per-tab popups (walkthrough, reviews) and the
+      -- walkthrough notes pane, which has winfixwidth and would stay narrow.
+      local buffer = require("claudecode.terminal").get_active_terminal_bufnr()
+      local windows = buffer and vim.fn.win_findbuf(buffer) or {}
+      if notes_window and vim.api.nvim_win_is_valid(notes_window) then
+        windows[#windows + 1] = notes_window
+      end
+      for _, window in ipairs(windows) do
+        agent_layout.refit(window)
+      end
+      for _, window in ipairs(buffer and vim.fn.win_findbuf(buffer) or {}) do
+        fit_claude_terminal(window)
       end
     end,
   })

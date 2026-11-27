@@ -236,8 +236,8 @@ function M.toggle(layout)
 end
 
 function M.resize()
-  if terminal and terminal:win_valid() and agent_layout.current(terminal.win) == "popup" then
-    agent_layout.show(terminal.win, "popup")
+  if terminal and terminal:win_valid() then
+    agent_layout.refit(terminal.win)
   end
 end
 
