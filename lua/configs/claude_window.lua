@@ -178,7 +178,7 @@ local function set_notes_winbar(stale)
     return "%#ClaudeTourKey#" .. keys .. " %#ClaudeTourHint#" .. label
   end
   local bar = " " .. table.concat({
-    hint("<leader>an", "Next"), hint("aN", "Prev"), hint("ae", "Chat"), hint("ah", "Hide"),
+    hint("<leader>an", "Next"), hint("aN", "Prev"), hint("ae", "Chat"), hint("ah", "Hide"), hint("ac", "Edit"),
   }, "%#ClaudeTourSep# · ")
   if stale then
     bar = " %#ClaudeTourStale# STALE EXPLANATION %#ClaudeTourHint#" .. bar
@@ -674,6 +674,54 @@ local function show_tour_stop(tour, index)
   if tour.reading and not walkthrough_generating(tour) then
     focus_walkthrough_code()
   end
+end
+
+-- <leader>ac in a walkthrough: end it and keep editing the file it was on.
+-- The walkthrough tab closes and the file opens, at the same cursor, in the
+-- window the walkthrough was started from (the previous buffer stays listed).
+function M.continue_editing()
+  if not (code_tour and shown_code_tab and vim.api.nvim_get_current_tabpage() == shown_code_tab) then
+    return false
+  end
+  local window = shown_code_window
+  local buffer = window and vim.api.nvim_win_is_valid(window) and vim.api.nvim_win_get_buf(window)
+  if not buffer or vim.bo[buffer].buftype ~= "" then
+    vim.notify("This stop's file is not available to edit", vim.log.levels.WARN)
+    return true
+  end
+  local cursor = vim.api.nvim_win_get_cursor(window)
+  local origin = shown_code_origin
+  shown_code_origin = nil -- restored here, not by TabLeave
+  hide_tour_chat()
+  vim.cmd.stopinsert()
+  vim.api.nvim_buf_clear_namespace(buffer, shown_code_namespace, 0, -1)
+  clear_tracking()
+  code_tour = nil
+  vim.cmd.tabclose()
+
+  local target = origin and origin.focused
+  local function editable(win)
+    return win and vim.api.nvim_win_is_valid(win)
+      and vim.api.nvim_win_get_config(win).relative == ""
+      and vim.bo[vim.api.nvim_win_get_buf(win)].buftype == ""
+  end
+  if not editable(target) then
+    target = nil
+    for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
+      if editable(win) then
+        target = win
+        break
+      end
+    end
+  end
+  target = target or vim.api.nvim_get_current_win()
+  vim.api.nvim_set_current_win(target)
+  vim.bo[buffer].buflisted = true -- walkthrough files are loaded unlisted
+  vim.api.nvim_win_set_buf(target, buffer)
+  pcall(vim.api.nvim_win_set_cursor, target, cursor)
+  vim.cmd("normal! zz")
+  vim.notify("Walkthrough closed. Reopen it with <leader>z.")
+  return true
 end
 
 -- <leader>ah: hide the walkthrough (close its tab and go back to the window

@@ -38,6 +38,18 @@ function M.dock()
   provider().toggle("sidebar")
 end
 
+-- <leader>ac: in a walkthrough, end it and keep editing its file; elsewhere
+-- toggle the assistant sidebar.
+function M.continue_or_toggle()
+  if selected() == "Claude" or package.loaded[providers.Claude] then
+    local claude = require(providers.Claude)
+    if claude.in_code_tour() and claude.continue_editing() then
+      return
+    end
+  end
+  M.toggle("sidebar")
+end
+
 function M.focus()
   provider().open()
 end
@@ -170,7 +182,7 @@ function M.map_terminal_keys(buffer)
   vim.keymap.set("n", "<C-s>", M.dock, {
     buffer = buffer, silent = true, desc = "Dock assistant in sidebar",
   })
-  vim.keymap.set("t", "<leader>ac", "<C-\\><C-n><Cmd>lua require('configs.assistant').toggle('sidebar')<CR>", opts)
+  vim.keymap.set("t", "<leader>ac", "<C-\\><C-n><Cmd>lua require('configs.assistant').continue_or_toggle()<CR>", opts)
   vim.keymap.set("t", "<leader>ap", "<C-\\><C-n><Cmd>lua require('configs.assistant').pick()<CR>", opts)
 
   local directions = { h = "Left", j = "Down", k = "Up", l = "Right" }
@@ -196,7 +208,7 @@ function M.keys()
     { "<C-f>", function() M.toggle("popup") end, desc = "Toggle assistant popup" },
     { "<leader>a", nil, desc = "Coding assistant" },
     { "<leader>ap", M.pick, desc = "Pick Claude or Codex" },
-    { "<leader>ac", function() M.toggle("sidebar") end, desc = "Toggle assistant sidebar" },
+    { "<leader>ac", function() M.continue_or_toggle() end, desc = "Walkthrough: keep editing file · else toggle sidebar" },
     { "<leader>af", M.focus, desc = "Focus assistant" },
     { "<leader>an", function() provider("Claude").step_code_tour(1) end, desc = "Next code walkthrough stop" },
     { "<leader>aN", function() provider("Claude").step_code_tour(-1) end, desc = "Previous code walkthrough stop" },
