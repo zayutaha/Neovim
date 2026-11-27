@@ -7,12 +7,16 @@ local review_tabs = {}
 local tab_popups = {}
 local popup_returns = {}
 local shown_code_namespace = vim.api.nvim_create_namespace("ClaudeShowCode")
+local tracking_namespace = vim.api.nvim_create_namespace("ClaudeShowCodeRange")
+local tracking_group = vim.api.nvim_create_augroup("ClaudeShowCodeTracking", { clear = true })
+local tracked -- { buffer, mark, stop }: the shown stop's range, following edits
 local shown_code_buffer
 local shown_code_tab
 local shown_code_window
 local shown_code_origin
 local code_tour
 local notes_highlights = vim.api.nvim_create_namespace("ClaudeWalkthroughNotes")
+local notes_stale_highlights = vim.api.nvim_create_namespace("ClaudeWalkthroughNotesStale")
 local notes_window
 local rendered_tour
 local rendered_index
@@ -152,6 +156,35 @@ local function set_walkthrough_highlights()
   -- Only the notes pane: keep its winbar from dimming when unfocused.
   vim.api.nvim_set_hl(notes_highlights, "WinBar", { fg = text.fg, bg = bar.bg })
   vim.api.nvim_set_hl(notes_highlights, "WinBarNC", { fg = text.fg, bg = bar.bg })
+
+  -- Stale explanation: the notes box turns grey and the highlight amber-grey.
+  local warn = vim.api.nvim_get_hl(0, { name = "DiagnosticWarn", link = false })
+  local comment = vim.api.nvim_get_hl(0, { name = "Comment", link = false })
+  local grey = "#34353f"
+  for _, name in ipairs({ "Normal", "NormalNC" }) do
+    vim.api.nvim_set_hl(notes_stale_highlights, name, { fg = comment.fg or "#9399b2", bg = grey, ctermbg = 237 })
+  end
+  for _, name in ipairs({ "ClaudeTourKey", "ClaudeTourHint", "ClaudeTourSep", "WinBar", "WinBarNC" }) do
+    vim.api.nvim_set_hl(notes_stale_highlights, name, vim.api.nvim_get_hl(notes_highlights, { name = name }))
+  end
+  for _, ns in ipairs({ 0, notes_highlights, notes_stale_highlights }) do
+    vim.api.nvim_set_hl(ns, "ClaudeTourStale", { fg = "#1e1e2e", bg = warn.fg or "#f9e2af", bold = true })
+  end
+  vim.api.nvim_set_hl(0, "ClaudeCodeStaleRange", { bg = "#3b3829", ctermbg = 58 })
+end
+
+local function set_notes_winbar(stale)
+  local function hint(keys, label)
+    return "%#ClaudeTourKey#" .. keys .. " %#ClaudeTourHint#" .. label
+  end
+  local bar = " " .. table.concat({
+    hint("<leader>an", "Next"), hint("aN", "Prev"), hint("ae", "Chat"), hint("ah", "Hide"),
+  }, "%#ClaudeTourSep# · ")
+  if stale then
+    bar = " %#ClaudeTourStale# STALE EXPLANATION %#ClaudeTourHint#" .. bar
+  end
+  vim.wo[notes_window].winbar = bar
+  vim.api.nvim_win_set_hl_ns(notes_window, stale and notes_stale_highlights or notes_highlights)
 end
 
 local function show_walkthrough_notes()
@@ -175,21 +208,15 @@ local function show_walkthrough_notes()
     opts.signcolumn = "no"
     opts.wrap = true
     opts.linebreak = true
-    local function hint(keys, label)
-      return "%#ClaudeTourKey#" .. keys .. " %#ClaudeTourHint#" .. label
-    end
-    opts.winbar = " " .. table.concat({
-      hint("<leader>an", "Next"), hint("aN", "Prev"), hint("ae", "Chat"), hint("ah", "Hide"),
-    }, "%#ClaudeTourSep# · ")
-    vim.api.nvim_win_set_hl_ns(notes_window, notes_highlights)
     rendered_tour = nil
   end
 
   if rendered_tour ~= tour or rendered_index ~= tour.index then
+    set_notes_winbar(tour.stale)
     local stop = tour.stops[tour.index]
     local title = stop.title or vim.fn.fnamemodify(stop.file, ":t")
     local location = vim.fn.fnamemodify(stop.file, ":~:.")
-    if tour.location.first then
+    if tour.location.first and tour.location.last then
       location = ("%s:%d–%d"):format(location, tour.location.first, tour.location.last)
     end
     local lines = {
@@ -198,6 +225,15 @@ local function show_walkthrough_notes()
       "`" .. location .. "`",
       "",
     }
+    if tour.stale == "removed" then
+      vim.list_extend(lines, { "> ⚠ **Stale explanation:** the code it described was removed.", "" })
+    elseif tour.stale then
+      vim.list_extend(lines, {
+        "> ⚠ **Stale explanation:** the code changed since this was explained."
+          .. " Lines you changed are marked `~`.",
+        "",
+      })
+    end
     if tour.location.reason then
       vim.list_extend(lines, {
         "> " .. tour.location.reason .. " Select the code and press `<leader>aR` to update the range.",
@@ -345,23 +381,156 @@ local function code_range_buffer(path, first_line, last_line)
   return buffer
 end
 
-local function paint_code_range(buffer, first_line, last_line)
+-- What the stop's explanation was written against: fingerprints of its lines.
+-- Records saved before this existed use the anchor's range.
+local function explained_lines(stop)
+  stop.explained = stop.explained or (stop.anchor and stop.anchor.range)
+  return stop.explained
+end
+
+local function clear_tracking()
+  vim.api.nvim_clear_autocmds({ group = tracking_group })
+  if tracked and vim.api.nvim_buf_is_valid(tracked.buffer) then
+    vim.api.nvim_buf_clear_namespace(tracked.buffer, tracking_namespace, 0, -1)
+  end
+  tracked = nil
+end
+
+-- The tracked range as it is now: first and last line, its lines, and
+-- whether all of its text was deleted.
+local function tracked_range()
+  if not (tracked and vim.api.nvim_buf_is_valid(tracked.buffer)) then
+    return nil
+  end
+  local mark = vim.api.nvim_buf_get_extmark_by_id(tracked.buffer, tracking_namespace, tracked.mark, { details = true })
+  if not mark[1] then
+    return nil
+  end
+  local row, col, details = mark[1], mark[2], mark[3]
+  local text = vim.api.nvim_buf_get_text(tracked.buffer, row, col, details.end_row, details.end_col, {})
+  local removed = vim.trim(table.concat(text, "\n")) == ""
+  -- The range ends at the start of the line after it (or at the end of the
+  -- buffer's last line).
+  local last = (details.end_col == 0 and details.end_row > row) and details.end_row or details.end_row + 1
+  local lines = vim.api.nvim_buf_get_lines(tracked.buffer, row, last, false)
+  return row + 1, last, lines, removed
+end
+
+-- Repaint the shown stop from its tracked range: fresh in blue, stale (the
+-- code differs from what was explained) in amber-grey with `~` beside the
+-- lines that changed. Updates the notes when the stale state flips.
+local function render_tracked_range()
+  local first, last, lines, removed = tracked_range()
+  if not first then
+    return
+  end
+  local buffer, stop = tracked.buffer, tracked.stop
+  local explained = explained_lines(stop) or {}
+  local hashes = ranges.fingerprints(lines)
+  local stale = removed and "removed" or (not vim.deep_equal(hashes, explained) and "changed") or nil
+  local known = {}
+  for _, hash in ipairs(explained) do
+    known[hash] = true
+  end
+
+  vim.api.nvim_buf_clear_namespace(buffer, shown_code_namespace, 0, -1)
+  if not removed then
+    for index, line in ipairs(hashes) do
+      local edited = stale and not known[line]
+      vim.api.nvim_buf_set_extmark(buffer, shown_code_namespace, first + index - 2, 0, {
+        line_hl_group = stale and "ClaudeCodeStaleRange" or "ClaudeCodeShownRange",
+        sign_text = edited and "~" or "│",
+        sign_hl_group = stale and "DiagnosticWarn" or "DiagnosticInfo",
+      })
+    end
+  end
+
+  local tour = code_tour
+  if tour and tour.stops[tour.index] == stop and tour.location then
+    tour.location.first = first
+    tour.location.last = not removed and last or nil
+    if tour.stale ~= stale then
+      tour.stale = stale
+      if notes_window and vim.api.nvim_win_is_valid(notes_window) then
+        rendered_index = nil
+        show_walkthrough_notes()
+      end
+    elseif notes_window and vim.api.nvim_win_is_valid(notes_window) then
+      rendered_index = nil
+      show_walkthrough_notes()
+    end
+  end
+end
+
+-- Saving the file stores where the stop's code is now, so it reopens on the
+-- edited lines and still shows as stale (its explanation is unchanged).
+local function save_tracked_range()
+  local first, last, _, removed = tracked_range()
+  local tour = code_tour
+  if not first or removed or not tour or not tour.saved_at or tour.stops[tour.index] ~= tracked.stop then
+    return
+  end
+  local stop = tracked.stop
+  explained_lines(stop)
+  stop.first_line, stop.last_line = first, last
+  stop.anchor = ranges.capture(vim.api.nvim_buf_get_lines(tracked.buffer, 0, -1, false), first, last)
+  local ok, err = pcall(require("configs.code_walkthroughs").save, tour)
+  if not ok then
+    vim.notify(tostring(err), vim.log.levels.WARN)
+  end
+end
+
+local function paint_code_range(buffer, first_line, last_line, stop)
   if shown_code_buffer and vim.api.nvim_buf_is_valid(shown_code_buffer) then
     vim.api.nvim_buf_clear_namespace(shown_code_buffer, shown_code_namespace, 0, -1)
   end
+  clear_tracking()
   shown_code_buffer = nil
   if not first_line then
     return
   end
   vim.api.nvim__ns_set(shown_code_namespace, { wins = { shown_code_window } })
-  for line = first_line, last_line do
-    vim.api.nvim_buf_set_extmark(buffer, shown_code_namespace, line - 1, 0, {
-      line_hl_group = "ClaudeCodeShownRange",
-      sign_text = "│",
-      sign_hl_group = "DiagnosticInfo",
-    })
-  end
   shown_code_buffer = buffer
+  if not stop or vim.bo[buffer].buftype ~= "" then
+    for line = first_line, last_line do
+      vim.api.nvim_buf_set_extmark(buffer, shown_code_namespace, line - 1, 0, {
+        line_hl_group = "ClaudeCodeShownRange",
+        sign_text = "│",
+        sign_hl_group = "DiagnosticInfo",
+      })
+    end
+    return
+  end
+  -- One extmark spans the range so edits inside it (new lines at either end
+  -- included) keep it on the code that was explained.
+  -- It ends at the start of the next line (on the buffer's last line, at that
+  -- line's end). Lines opened directly below the range are not part of it.
+  local end_row, end_col = last_line, 0
+  if last_line >= vim.api.nvim_buf_line_count(buffer) then
+    end_row = last_line - 1
+    end_col = #(vim.api.nvim_buf_get_lines(buffer, end_row, end_row + 1, false)[1] or "")
+  end
+  tracked = {
+    buffer = buffer,
+    stop = stop,
+    mark = vim.api.nvim_buf_set_extmark(buffer, tracking_namespace, first_line - 1, 0, {
+      end_row = end_row,
+      end_col = end_col,
+      right_gravity = false,
+      end_right_gravity = end_col > 0,
+    }),
+  }
+  vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI" }, {
+    group = tracking_group,
+    buffer = buffer,
+    callback = render_tracked_range,
+  })
+  vim.api.nvim_create_autocmd("BufWritePost", {
+    group = tracking_group,
+    buffer = buffer,
+    callback = save_tracked_range,
+  })
+  render_tracked_range()
 end
 
 -- Put the stop on screen: the start of the range near the top, or the whole
@@ -404,7 +573,7 @@ local function center_code_range(window, buffer, first_line, last_line)
   end, 80)
 end
 
-local function show_code_range(buffer, first_line, last_line)
+local function show_code_range(buffer, first_line, last_line, stop)
   local terminal = require("claudecode.terminal").get_active_terminal_bufnr()
   if not terminal then
     error("Open the Claude terminal in Neovim first")
@@ -437,7 +606,7 @@ local function show_code_range(buffer, first_line, last_line)
     vim.api.nvim_win_set_buf(shown_code_window, buffer)
   end
   vim.cmd.stopinsert()
-  paint_code_range(buffer, first_line, last_line)
+  paint_code_range(buffer, first_line, last_line, stop)
   center_code_range(shown_code_window, buffer, first_line or 1, last_line or first_line or 1)
 end
 
@@ -494,10 +663,11 @@ local function show_tour_stop(tour, index)
     vim.bo[buffer].modifiable = false
     reason = "The saved source file could not be opened."
   end
-  show_code_range(buffer, first, last)
   tour.index = index
   tour.location = { first = first, last = last, reason = reason }
+  tour.stale = nil
   code_tour = tour
+  show_code_range(buffer, first, last, first and stop or nil)
   rendered_index = nil
   watch_terminal_output(require("claudecode.terminal").get_active_terminal_bufnr())
   show_walkthrough_notes()
@@ -526,6 +696,7 @@ function M.toggle_code_tour()
     if origin and vim.api.nvim_win_is_valid(origin.focused) then
       vim.api.nvim_set_current_win(origin.focused)
     end
+    vim.notify("Walkthrough hidden. Press <leader>ah to bring it back.")
     return
   end
   code_tour.reading = false
@@ -560,6 +731,7 @@ function M.show_code_tour(stops, id, session_id)
   for _, stop in ipairs(stops) do
     local buffer = code_range_buffer(stop.file, stop.first_line, stop.last_line)
     stop.anchor = ranges.capture(vim.api.nvim_buf_get_lines(buffer, 0, -1, false), stop.first_line, stop.last_line)
+    stop.explained = stop.anchor.range
   end
   local history = require("configs.code_walkthroughs")
   if session_id and session_id ~= vim.NIL and not history.valid_session(session_id) then
@@ -594,10 +766,14 @@ function M.code_tour_status(session_id)
     if ok then
       first, last = ranges.resolve(lines, stop)
     end
+    local explained = stop.explained or (stop.anchor and stop.anchor.range)
+    local stale = not first
+      or not vim.deep_equal(ranges.fingerprints(vim.list_slice(lines, first, last)), explained)
     stops[index] = {
       index = index, file = stop.file, title = stop.title, note = stop.note,
       first_line = first or vim.NIL, last_line = first and last or vim.NIL,
       saved_first_line = stop.first_line, saved_last_line = stop.last_line,
+      stale = stale,
     }
   end
   return vim.json.encode({ id = tour.id, index = tour.index, saved = tour.saved_at ~= nil, stops = stops })
@@ -626,6 +802,7 @@ function M.update_code_tour(session_id, id, updates)
     stop.title = update.title or stop.title
     stop.note = update.note
     stop.anchor = ranges.capture(lines, stop.first_line, stop.last_line)
+    stop.explained = stop.anchor.range
     updated[index] = true
   end
   require("configs.code_walkthroughs").save(vim.tbl_extend("force", tour, { stops = stops }))
@@ -640,7 +817,8 @@ function M.update_code_tour(session_id, id, updates)
       end
       local first, last = ranges.resolve(vim.api.nvim_buf_get_lines(buffer, 0, -1, false), stop)
       tour.location = { first = first, last = first and last or nil, reason = not first and last or nil }
-      paint_code_range(buffer, first, last)
+      tour.stale = nil
+      paint_code_range(buffer, first, last, first and stop or nil)
     end
     if notes_window and vim.api.nvim_win_is_valid(notes_window) then
       rendered_index = nil
@@ -822,6 +1000,7 @@ function M.reanchor_code_tour()
   local stop = code_tour.stops[code_tour.index]
   stop.file, stop.first_line, stop.last_line = path, first, last
   stop.anchor = ranges.capture(vim.api.nvim_buf_get_lines(buffer, 0, -1, false), first, last)
+  stop.explained = stop.anchor.range
   if code_tour.saved_at then
     local ok, err = pcall(require("configs.code_walkthroughs").save, code_tour)
     if not ok then
@@ -1126,6 +1305,7 @@ function M.setup()
         if shown_code_buffer and vim.api.nvim_buf_is_valid(shown_code_buffer) then
           vim.api.nvim_buf_clear_namespace(shown_code_buffer, shown_code_namespace, 0, -1)
         end
+        clear_tracking()
         shown_code_buffer = nil
       end
       for tab, popup in pairs(tab_popups) do

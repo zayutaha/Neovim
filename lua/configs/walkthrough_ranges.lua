@@ -20,6 +20,8 @@ local function slice(lines, first, last)
   return result
 end
 
+M.fingerprints = fingerprints
+
 function M.capture(lines, first, last)
   local hashes = fingerprints(lines)
   return {

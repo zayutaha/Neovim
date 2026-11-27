@@ -81,7 +81,9 @@ python3 "$NVIM_SHOW_CODE" status ${CLAUDE_SESSION_ID}
 ```
 
 This returns the tour `id` and each stop's current resolved range (`first_line`
-is null if the anchor was lost). Re-read the files, then send only the changed
+is null if the anchor was lost). `stale: true` means the code changed since the
+stop was explained (the user sees a grey "STALE EXPLANATION" box): rewrite that
+stop's note against the current code. Sending an update clears the stale state. Re-read the files, then send only the changed
 stops. `index` and `file` must match the saved stop:
 
 ```bash
