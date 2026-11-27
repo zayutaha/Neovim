@@ -201,6 +201,7 @@ function M.keys()
     { "<leader>an", function() provider("Claude").step_code_tour(1) end, desc = "Next code walkthrough stop" },
     { "<leader>aN", function() provider("Claude").step_code_tour(-1) end, desc = "Previous code walkthrough stop" },
     { "<leader>ae", function() provider("Claude").toggle_code_explanation() end, desc = "Toggle walkthrough explanation and live prompt" },
+    { "<leader>ah", function() provider("Claude").toggle_code_tour() end, desc = "Hide or show the code walkthrough" },
     { "<leader>aR", function() provider("Claude").reanchor_code_tour() end, mode = "x", desc = "Update saved walkthrough range" },
     { "<leader>ar", function() M.resume(false) end, desc = "Resume assistant session" },
     { "<leader>aC", function() M.resume(true) end, desc = "Continue assistant session" },

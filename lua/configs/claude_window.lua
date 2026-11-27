@@ -179,7 +179,7 @@ local function show_walkthrough_notes()
       return "%#ClaudeTourKey#" .. keys .. " %#ClaudeTourHint#" .. label
     end
     opts.winbar = " " .. table.concat({
-      hint("<leader>an", "Next"), hint("aN", "Prev"), hint("ae", "Chat"),
+      hint("<leader>an", "Next"), hint("aN", "Prev"), hint("ae", "Chat"), hint("ah", "Hide"),
     }, "%#ClaudeTourSep# · ")
     vim.api.nvim_win_set_hl_ns(notes_window, notes_highlights)
     rendered_tour = nil
@@ -504,6 +504,33 @@ local function show_tour_stop(tour, index)
   if tour.reading and not walkthrough_generating(tour) then
     focus_walkthrough_code()
   end
+end
+
+-- <leader>ah: hide the walkthrough (close its tab and go back to the window
+-- it was opened from) or bring it back at the same stop.
+function M.toggle_code_tour()
+  if not code_tour then
+    vim.notify("Open a /show-code walkthrough first")
+    return
+  end
+  if shown_code_tab and vim.api.nvim_tabpage_is_valid(shown_code_tab) then
+    if vim.api.nvim_get_current_tabpage() ~= shown_code_tab then
+      vim.api.nvim_set_current_tabpage(shown_code_tab)
+      return
+    end
+    local origin = shown_code_origin
+    hide_tour_chat()
+    vim.cmd.stopinsert()
+    -- TabLeave restores the origin once the tab is gone.
+    vim.cmd.tabclose()
+    if origin and vim.api.nvim_win_is_valid(origin.focused) then
+      vim.api.nvim_set_current_win(origin.focused)
+    end
+    return
+  end
+  code_tour.reading = false
+  show_tour_stop(code_tour, code_tour.index)
+  focus_walkthrough_code()
 end
 
 function M.toggle_code_explanation()
