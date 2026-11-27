@@ -76,23 +76,73 @@ return {
     lazy = false,
   },
   {
-    "sindrets/diffview.nvim",
+    "coder/claudecode.nvim",
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons",
+      "folke/snacks.nvim",
     },
+    config = function()
+      local claude_window = require("configs.claude_window")
+      require("claudecode").setup({
+        terminal_cmd = "claude --permission-mode manual --settings "
+          .. vim.fn.shellescape(
+            vim.fn.stdpath("config") .. "/configs/claude-hooks.json"
+          ),
+        diff_opts = {
+          layout = "unified",
+          open_in_new_tab = true,
+        },
+        terminal = claude_window.terminal_options,
+        env = claude_window.terminal_env,
+      })
+      claude_window.setup()
+      require("configs.assistant").setup()
+
+      local function set_claude_diff_highlights()
+        vim.api.nvim_set_hl(0, "ClaudeCodeInlineDiffAdd", { bg = "#315b38" })
+        vim.api.nvim_set_hl(0, "ClaudeCodeInlineDiffDelete", {
+          bg = "#63343a",
+          strikethrough = true,
+        })
+        vim.api.nvim_set_hl(0, "ClaudeCodeInlineDiffAddSign", { fg = "#a6e3a1" })
+        vim.api.nvim_set_hl(0, "ClaudeCodeInlineDiffDeleteSign", { fg = "#f38ba8" })
+        vim.api.nvim_set_hl(0, "ClaudeCodeShownRange", { bg = "#303b58", ctermbg = 236 })
+      end
+
+      set_claude_diff_highlights()
+      vim.api.nvim_create_autocmd("ColorScheme", {
+        callback = set_claude_diff_highlights,
+      })
+    end,
     cmd = {
-      "DiffviewOpen",
-      "DiffviewFileHistory",
-      "DiffviewClose",
-      "DiffviewToggleFiles",
-      "DiffviewFocusFiles",
-      "DiffviewRefresh",
+      "ClaudeCode",
+      "ClaudeCodeFocus",
+      "ClaudeCodeSelectModel",
+      "ClaudeCodeAdd",
+      "ClaudeCodeSend",
+      "ClaudeCodeTreeAdd",
+      "ClaudeCodeStatus",
+      "ClaudeCodeStart",
+      "ClaudeCodeStop",
+      "ClaudeCodeOpen",
+      "ClaudeCodeClose",
+      "ClaudeCodeDiffAccept",
+      "ClaudeCodeDiffDeny",
+      "ClaudeCodeCloseAllDiffs",
+    },
+    keys = require("configs.assistant").keys(),
+  },
+  {
+    "esmuellert/codediff.nvim",
+    cmd = "CodeDiff",
+    opts = {
+      diff = {
+        layout = "side-by-side",
+      },
     },
     keys = {
-      { "<leader>gD", "<cmd>DiffviewOpen<cr>", desc = "Git Diff View" },
-      { "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", desc = "File Git History" },
-      { "<leader>gH", "<cmd>DiffviewFileHistory<cr>", desc = "Git History" },
+      { "<leader>gD", "<cmd>CodeDiff<cr>", desc = "Git Diff View" },
+      { "<leader>gh", "<cmd>CodeDiff history %<cr>", desc = "File Git History" },
+      { "<leader>gH", "<cmd>CodeDiff history<cr>", desc = "Git History" },
     },
   },
   {
@@ -601,6 +651,13 @@ return {
       -- Other
       {
         "<leader>z",
+        function()
+          require("configs.code_walkthroughs").pick()
+        end,
+        desc = "Saved Claude walkthroughs",
+      },
+      {
+        "<leader>uz",
         function()
           Snacks.zen()
         end,
