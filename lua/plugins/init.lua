@@ -140,7 +140,27 @@ return {
       },
     },
     keys = {
-      { "<leader>gD", "<cmd>CodeDiff<cr>", desc = "Git Diff View" },
+      {
+        "<leader>gD",
+        function()
+          -- Working tree clean: pick a commit and diff everything since it.
+          local status = vim.system({ "git", "status", "--porcelain" }, { text = true }):wait()
+          if status.code ~= 0 or vim.trim(status.stdout or "") ~= "" then
+            vim.cmd.CodeDiff()
+            return
+          end
+          Snacks.picker.git_log({
+            title = "No changes · diff since commit",
+            confirm = function(picker, item)
+              picker:close()
+              if item and item.commit then
+                vim.cmd.CodeDiff(item.commit)
+              end
+            end,
+          })
+        end,
+        desc = "Git Diff View (pick a commit when clean)",
+      },
       { "<leader>gh", "<cmd>CodeDiff history %<cr>", desc = "File Git History" },
       { "<leader>gH", "<cmd>CodeDiff history<cr>", desc = "Git History" },
     },
