@@ -22,7 +22,34 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
   end,
 })
 
+-- Whether Codex has a saved session started in this folder. Session files
+-- live in $CODEX_HOME/sessions/YYYY/MM/DD/rollout-*.jsonl and their first
+-- line records the cwd; only the newest ones are checked.
+local function has_previous_session(cwd)
+  local home = vim.env.CODEX_HOME or (vim.env.HOME .. "/.codex")
+  local files = vim.fn.glob(home .. "/sessions/*/*/*/rollout-*.jsonl", false, true)
+  table.sort(files, function(a, b)
+    return a > b
+  end)
+  for index = 1, math.min(#files, 200) do
+    local ok, meta = pcall(function()
+      return vim.json.decode(vim.fn.readfile(files[index], "", 1)[1])
+    end)
+    if ok and type(meta) == "table" then
+      local session_cwd = type(meta.payload) == "table" and meta.payload.cwd or meta.cwd
+      if session_cwd == cwd then
+        return true
+      end
+    end
+  end
+  return false
+end
+
 local function start(args)
+  -- Starting fresh continues the folder's last session, like Claude's -c.
+  if not args and has_previous_session(vim.fn.getcwd()) then
+    args = { "resume", "--last" }
+  end
   local edit_instructions = table.concat({
     "Use the apply_patch tool for file edits in this Neovim session.",
     "Neovim displays the proposed patch before the user approves it in Codex.",
