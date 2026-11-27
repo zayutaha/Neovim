@@ -105,7 +105,10 @@ function M.pick()
         picker:close()
         vim.schedule(function()
           local ok, err = pcall(function()
-            vim.cmd.ClaudeCodeStart()
+            require("lazy").load({ plugins = { "claudecode.nvim" } })
+            if not require("claudecode").state.server then
+              vim.cmd.ClaudeCodeStart()
+            end
             require("configs.claude_window").reopen_code_tour(item.tour)
           end)
           if not ok then

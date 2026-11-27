@@ -312,9 +312,33 @@ function M.show_sidebar(focus)
   end
 end
 
-local function code_range_buffer(path, first_line, last_line)
+-- Load a walkthrough's source file without the E325 swap-file prompt
+-- (the file is often open in another Neovim). Raised from Lua that prompt is
+-- an error; open the file read-only instead, as the prompt's [O] would.
+local function load_source(path)
   local buffer = vim.fn.bufadd(path)
-  vim.fn.bufload(buffer)
+  if not vim.api.nvim_buf_is_loaded(buffer) then
+    local group = vim.api.nvim_create_augroup("ClaudeWalkthroughSwap", { clear = true })
+    vim.api.nvim_create_autocmd("SwapExists", {
+      group = group,
+      callback = function()
+        vim.v.swapchoice = "o"
+      end,
+    })
+    local shortmess = vim.o.shortmess
+    vim.opt.shortmess:append("A")
+    local ok, err = pcall(vim.fn.bufload, buffer)
+    vim.o.shortmess = shortmess
+    vim.api.nvim_del_augroup_by_id(group)
+    if not ok then
+      error(err, 0)
+    end
+  end
+  return buffer
+end
+
+local function code_range_buffer(path, first_line, last_line)
+  local buffer = load_source(path)
   if first_line < 1 or last_line < first_line or last_line > vim.api.nvim_buf_line_count(buffer) then
     error(("Line range %d–%d is outside %s"):format(first_line, last_line, path))
   end
@@ -458,7 +482,7 @@ local function show_tour_stop(tour, index)
     if vim.api.nvim_buf_is_loaded(buffer) and not vim.bo[buffer].modified then
       vim.cmd.checktime({ args = { tostring(buffer) } })
     end
-    vim.fn.bufload(buffer)
+    load_source(stop.file)
     first, last = ranges.resolve(vim.api.nvim_buf_get_lines(buffer, 0, -1, false), stop)
     if not first then
       reason, last = last, nil
