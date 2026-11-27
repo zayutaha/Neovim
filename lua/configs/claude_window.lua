@@ -1156,6 +1156,12 @@ local function apply_review(path, original, proposed)
     end
   end
 
+  -- A new file's directory may not exist yet (E482 otherwise).
+  local directory = vim.fs.dirname(path)
+  if vim.fn.isdirectory(directory) == 0 and vim.fn.mkdir(directory, "p") == 0 then
+    vim.notify("Could not write pinned diff: cannot create " .. directory, vim.log.levels.ERROR)
+    return false
+  end
   local ok, result = pcall(vim.fn.writefile, vim.split(proposed, "\n", { plain = true }), path, "bs")
   if not ok or result ~= 0 then
     vim.notify("Could not write pinned diff: " .. tostring(result), vim.log.levels.ERROR)
