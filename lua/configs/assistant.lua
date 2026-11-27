@@ -27,20 +27,11 @@ function M.toggle(layout)
   provider().toggle(layout)
 end
 
+-- Ctrl-S: toggle the assistant docked in the sidebar, starting it if needed
+-- (or move it there from the popup).
 function M.dock()
-  local name = selected()
-  provider(name).show_sidebar(true)
-end
-
--- Ctrl-S: save real files (NvChad's default), otherwise dock the assistant.
--- Buffers with a 'buftype' (terminal, walkthrough notes, scratch) can't be
--- written, and :w there fails with E382.
-function M.save_or_dock()
-  if vim.bo.buftype == "" and vim.api.nvim_buf_get_name(0) ~= "" then
-    vim.cmd.write()
-  else
-    M.dock()
-  end
+  require("lazy").load({ plugins = { "claudecode.nvim" } })
+  provider().toggle("sidebar")
 end
 
 function M.focus()

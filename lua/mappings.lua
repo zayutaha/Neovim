@@ -4,10 +4,10 @@ require "nvchad.mappings"
 
 local map = vim.keymap.set
 
--- Overrides NvChad's <C-s> (:w): saves real files, docks the assistant elsewhere.
+-- Overrides NvChad's <C-s> (:w): toggle the assistant sidebar.
 map("n", "<C-s>", function()
-  require("configs.assistant").save_or_dock()
-end, { desc = "Save file, or dock assistant in sidebar" })
+  require("configs.assistant").dock()
+end, { desc = "Toggle assistant sidebar" })
 
 map("n", "<leader>gd", function()
   require("configs.git_diff").open(0)
