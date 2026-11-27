@@ -1241,7 +1241,19 @@ local function open_diff_review(name, proposal)
     return
   end
 
-  local origin = save_popup_return(vim.api.nvim_get_current_tabpage())
+  -- One proposal at a time: a newer one replaces older pinned reviews (they
+  -- are stale), and the new review returns to where they would have.
+  local inherited
+  for tab, saved in pairs(review_tabs) do
+    review_tabs[tab] = nil -- so TabLeave doesn't restore it
+    if not inherited and saved.focused and vim.api.nvim_win_is_valid(saved.focused) then
+      inherited = saved
+    end
+    if vim.api.nvim_tabpage_is_valid(tab) and #vim.api.nvim_list_tabpages() > 1 then
+      vim.cmd.tabclose(vim.api.nvim_tabpage_get_number(tab))
+    end
+  end
+  local origin = inherited or save_popup_return(vim.api.nvim_get_current_tabpage())
   vim.cmd.tabnew()
   review_tabs[vim.api.nvim_get_current_tabpage()] = origin
   local editor = vim.api.nvim_get_current_win()
