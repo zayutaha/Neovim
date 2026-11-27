@@ -143,7 +143,14 @@ return {
       {
         "<leader>gD",
         function()
-          -- Working tree clean: pick a commit and diff everything since it.
+          local git_diff = require("configs.git_diff")
+          -- A base set with <leader>gB: diff everything since it.
+          local base = git_diff.base()
+          if base then
+            vim.cmd.CodeDiff(base)
+            return
+          end
+          -- Working tree clean: pick a commit (it becomes the base too).
           local status = vim.system({ "git", "status", "--porcelain" }, { text = true }):wait()
           if status.code ~= 0 or vim.trim(status.stdout or "") ~= "" then
             vim.cmd.CodeDiff()
@@ -154,12 +161,13 @@ return {
             confirm = function(picker, item)
               picker:close()
               if item and item.commit then
+                git_diff.set_base(item.commit)
                 vim.cmd.CodeDiff(item.commit)
               end
             end,
           })
         end,
-        desc = "Git Diff View (pick a commit when clean)",
+        desc = "Git Diff View (since <leader>gB base, or pick one)",
       },
       { "<leader>gh", "<cmd>CodeDiff history %<cr>", desc = "File Git History" },
       { "<leader>gH", "<cmd>CodeDiff history<cr>", desc = "Git History" },
@@ -430,9 +438,7 @@ return {
             confirm = function(picker, item)
               picker:close()
               if item and item.commit then
-                vim.g.git_diff_base_commit = item.commit
-                require("configs.git_diff").reset()
-                Snacks.notify.info("Git diff base set to " .. item.commit:sub(1, 7))
+                require("configs.git_diff").set_base(item.commit)
               end
             end,
           }

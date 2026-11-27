@@ -211,6 +211,23 @@ function M.navigate(direction)
   open_diff_item(next_index)
 end
 
+-- The diff base picked with <leader>gB (or <leader>gD's picker), shared by
+-- the hunk view and <leader>gD. Ignored when it isn't a commit in this repo.
+function M.set_base(commit)
+  vim.g.git_diff_base_commit = commit
+  M.reset()
+  Snacks.notify.info("Git diff base set to " .. commit:sub(1, 7))
+end
+
+function M.base()
+  local commit = vim.g.git_diff_base_commit
+  if type(commit) ~= "string" or commit == "" then
+    return nil
+  end
+  local check = vim.system({ "git", "cat-file", "-e", commit .. "^{commit}" }):wait()
+  return check.code == 0 and commit or nil
+end
+
 function M.reset()
   diff_items = {}
   selected_diff_index = nil
