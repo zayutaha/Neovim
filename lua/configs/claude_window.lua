@@ -480,7 +480,40 @@ local function save_tracked_range()
   end
 end
 
-local function paint_code_range(buffer, first_line, last_line, stop)
+local paint_code_range
+
+-- The file was reloaded from disk (Claude's edits, a pinned diff, a checkout).
+-- A reload replaces the buffer's lines, so the tracked range is found again
+-- from the stop's saved anchor and repainted; it shows as stale if the code
+-- differs from what was explained.
+local function reload_tracked_range()
+  if not tracked then
+    return
+  end
+  local buffer, stop = tracked.buffer, tracked.stop
+  vim.schedule(function()
+    if not (tracked and tracked.stop == stop and vim.api.nvim_buf_is_valid(buffer)) then
+      return
+    end
+    local first, last = ranges.resolve(vim.api.nvim_buf_get_lines(buffer, 0, -1, false), stop)
+    local tour = code_tour
+    if first then
+      paint_code_range(buffer, first, last, stop)
+      return
+    end
+    vim.api.nvim_buf_clear_namespace(buffer, shown_code_namespace, 0, -1)
+    if tour and tour.stops[tour.index] == stop then
+      tour.location = { first = tour.location and tour.location.first, reason = last }
+      tour.stale = "changed"
+      if notes_window and vim.api.nvim_win_is_valid(notes_window) then
+        rendered_index = nil
+        show_walkthrough_notes()
+      end
+    end
+  end)
+end
+
+function paint_code_range(buffer, first_line, last_line, stop)
   if shown_code_buffer and vim.api.nvim_buf_is_valid(shown_code_buffer) then
     vim.api.nvim_buf_clear_namespace(shown_code_buffer, shown_code_namespace, 0, -1)
   end
@@ -529,6 +562,11 @@ local function paint_code_range(buffer, first_line, last_line, stop)
     group = tracking_group,
     buffer = buffer,
     callback = save_tracked_range,
+  })
+  vim.api.nvim_create_autocmd({ "BufReadPost", "FileChangedShellPost" }, {
+    group = tracking_group,
+    buffer = buffer,
+    callback = reload_tracked_range,
   })
   render_tracked_range()
 end
@@ -1129,35 +1167,6 @@ local function apply_review(path, original, proposed)
   return true
 end
 
-local function review_touches_walkthrough(path, original, proposed)
-  local tour = code_tour
-  if not tour or not tour.saved_at or tour.session_id ~= active_claude_session or not original then
-    return false
-  end
-  local source = vim.split(original, "\n", { plain = true })
-  if source[#source] == "" then
-    table.remove(source)
-  end
-  local changes
-  for _, stop in ipairs(tour.stops) do
-    if vim.fs.normalize(stop.file) == vim.fs.normalize(path) then
-      local first, last = ranges.resolve(source, stop)
-      if first then
-        changes = changes or vim.diff(original, proposed, { result_type = "indices" }) or {}
-        for _, change in ipairs(changes) do
-          local start, count = change[1], change[2]
-          if (count == 0 and start >= first and start < last)
-            or (count > 0 and start <= last and start + count - 1 >= first)
-          then
-            return true
-          end
-        end
-      end
-    end
-  end
-  return false
-end
-
 local function open_diff_review(name, proposal)
   local diff = require("claudecode.diff")
   local state = diff._get_active_diffs()[name]
@@ -1213,11 +1222,8 @@ local function open_diff_review(name, proposal)
       vim.notify("Cannot apply pinned diff: " .. (apply_error or "original file is unavailable"), vim.log.levels.WARN)
     elseif apply_review(path, original, proposed) then
       applied = true
-      local message = "I applied your proposed changes. Please continue."
-      if review_touches_walkthrough(path, original, proposed) then
-        message = message .. " Use /show-code to update the affected saved walkthrough stops."
-      end
-      send_review_text(message,
+      -- A walkthrough stop whose code this changes is marked stale on its own.
+      send_review_text("I applied your proposed changes. Please continue.",
         "The diff was applied, but Claude could not receive the follow-up", terminal_buffer, true)
       close_review()
     end
