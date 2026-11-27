@@ -204,7 +204,21 @@ local function popup_terminal_options()
   return vim.tbl_extend("force", M.terminal_options.snacks_win_opts, { position = "float", backdrop = false })
 end
 
+-- Starting Claude fresh continues the project's last conversation (`-c`),
+-- when there is one: `claude --continue` exits if the project has none.
+local function start_args(args)
+  if args or require("claudecode.terminal").get_active_terminal_bufnr() then
+    return args
+  end
+  local config_dir = vim.env.CLAUDE_CONFIG_DIR or (vim.env.HOME .. "/.claude")
+  local project = vim.fn.getcwd():gsub("[^%w]", "-")
+  if #vim.fn.glob(config_dir .. "/projects/" .. project .. "/*.jsonl", false, true) > 0 then
+    return "--continue"
+  end
+end
+
 function M.open(layout, args)
+  args = start_args(args)
   local in_tour = M.in_code_tour()
   local target_layout = in_tour and "popup" or layout or "sidebar"
   local tab = vim.api.nvim_get_current_tabpage()
@@ -259,7 +273,7 @@ function M.show_sidebar(focus)
     end
   end
   if not window then
-    require("claudecode.terminal").open()
+    require("claudecode.terminal").open(nil, start_args())
     window = claude_window()
   end
   if not window then
