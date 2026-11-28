@@ -190,7 +190,6 @@ function M.map_terminal_keys(buffer)
   vim.keymap.set("n", "<C-s>", M.dock, {
     buffer = buffer, silent = true, desc = "Dock assistant in sidebar",
   })
-  vim.keymap.set("t", "<leader>ac", "<C-\\><C-n><Cmd>lua require('configs.assistant').continue_or_toggle()<CR>", opts)
   vim.keymap.set("t", "<leader>ap", "<C-\\><C-n><Cmd>lua require('configs.assistant').pick()<CR>", opts)
 
   local directions = { h = "Left", j = "Down", k = "Up", l = "Right" }
